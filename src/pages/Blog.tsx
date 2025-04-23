@@ -58,20 +58,15 @@ export function Blog() {
   }, [selectedCategory]);
 
   useEffect(() => {
-    // Fetch posts and ensure links are properly formatted
+    // Fetch posts without URL transformation since we'll handle links differently
     fetch('/posts.json')
       .then(res => res.json())
       .then(data => {
-        // Transform the data to ensure links are properly formatted
-        const transformedData = data.map((post: Post) => ({
-          ...post,
-          link: new URL(post.link, window.location.origin).toString()
-        }));
-        setPosts(transformedData);
+        setPosts(data);
       })
       .catch(error => {
         console.error('Error loading posts:', error);
-        setPosts([]); // Set empty array on error
+        setPosts([]);
       });
   }, []);
 
