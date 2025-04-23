@@ -58,10 +58,10 @@ export function Blog() {
   }, [selectedCategory]);
 
   useEffect(() => {
-    // Fetch posts without URL transformation since we'll handle links differently
     fetch('/posts.json')
       .then(res => res.json())
       .then(data => {
+        // Store posts without URL transformation
         setPosts(data);
       })
       .catch(error => {

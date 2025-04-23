@@ -10,6 +10,7 @@ interface Post {
   date: string;
   duration: string;
   content: string;
+  link: string;
 }
 
 interface ModalProps {
