@@ -4,7 +4,6 @@ import { ArrowRight, Shield, Code, Lock, Terminal, Github, Twitter, ChevronDown 
 import { Link } from 'react-router-dom';
 import { Modal } from '../components/Modal';
 import { TypewriterText } from '../components/TypewriterText';
-import gridPattern from '/grid.svg';
 
 interface Post {
   title: string;
@@ -118,7 +117,6 @@ export function Home() {
             scale: 1 + scrollY * 0.0001
           }}
         />
-        <div className="absolute inset-0" style={{ backgroundImage: `url(${gridPattern})`, backgroundPosition: 'center', maskImage: 'linear-gradient(180deg,white,rgba(255,255,255,0))' }} />
         
         {/* Content */}
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
