@@ -58,9 +58,21 @@ export function Blog() {
   }, [selectedCategory]);
 
   useEffect(() => {
+    // Fetch posts and ensure links are properly formatted
     fetch('/posts.json')
       .then(res => res.json())
-      .then(data => setPosts(data));
+      .then(data => {
+        // Transform the data to ensure links are properly formatted
+        const transformedData = data.map((post: Post) => ({
+          ...post,
+          link: new URL(post.link, window.location.origin).toString()
+        }));
+        setPosts(transformedData);
+      })
+      .catch(error => {
+        console.error('Error loading posts:', error);
+        setPosts([]); // Set empty array on error
+      });
   }, []);
 
   const toggleTheme = () => {
