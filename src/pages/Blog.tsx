@@ -22,7 +22,6 @@ export function Blog() {
   const [isDark, setIsDark] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedTags, setSelectedTags] = useState<Set<string>>(new Set());
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bubbleStyle, setBubbleStyle] = useState({ width: 0, height: 0, left: 0, top: 0 });
@@ -79,13 +78,10 @@ export function Blog() {
     const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          post.content.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = !selectedCategory || post.category === selectedCategory;
-    const matchesTags = selectedTags.size === 0 || 
-                       Array.from(selectedTags).every(tag => post.tags.includes(tag));
-    return matchesSearch && matchesCategory && matchesTags;
+    return matchesSearch && matchesCategory;
   });
 
   const uniqueCategories = Array.from(new Set(posts.map(post => post.category)));
-  const uniqueTags = Array.from(new Set(posts.flatMap(post => post.tags)));
 
   const openPostModal = (post: Post) => {
     setSelectedPost(post);
@@ -120,53 +116,19 @@ export function Blog() {
                 />
               </div>
 
-              <div className="space-y-8">
-                <div>
-                  <StaggeredText 
-                    text="Popular Tags"
-                    className="text-sm font-semibold mb-4 text-gray-400"
-                  />
-                  <div className="flex flex-wrap gap-2">
-                    {uniqueTags.map(tag => (
-                      <button
-                        key={tag}
-                        onClick={() => {
-                          const newTags = new Set(selectedTags);
-                          if (newTags.has(tag)) {
-                            newTags.delete(tag);
-                          } else {
-                            newTags.add(tag);
-                          }
-                          setSelectedTags(newTags);
-                        }}
-                        className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                          selectedTags.has(tag)
-                            ? 'bg-blue-500 text-white'
-                            : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
-                        }`}
-                      >
-                        #{tag}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-8 mt-8 border-t border-gray-700/50">
-                  <div className="flex items-center space-x-4">
-                    <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
-                       className="p-2 rounded-full hover:bg-gray-700/50 text-gray-300">
-                      <Github className="w-5 h-5" />
-                    </a>
-                    <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
-                       className="p-2 rounded-full hover:bg-gray-700/50 text-gray-300">
-                      <Twitter className="w-5 h-5" />
-                    </a>
-                    <button onClick={toggleTheme} 
-                            className="p-2 rounded-full hover:bg-gray-700/50 text-gray-300">
-                      {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                    </button>
-                  </div>
-                </div>
+              <div className="mt-8 flex items-center space-x-4">
+                <a href="https://github.com" target="_blank" rel="noopener noreferrer" 
+                   className="p-2 rounded-full hover:bg-gray-700/50 text-gray-300">
+                  <Github className="w-5 h-5" />
+                </a>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer"
+                   className="p-2 rounded-full hover:bg-gray-700/50 text-gray-300">
+                  <Twitter className="w-5 h-5" />
+                </a>
+                <button onClick={toggleTheme} 
+                        className="p-2 rounded-full hover:bg-gray-700/50 text-gray-300">
+                  {isDark ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
               </div>
             </motion.aside>
           )}
@@ -401,3 +363,4 @@ export function Blog() {
     </div>
   );
 } 
+

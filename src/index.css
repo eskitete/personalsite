@@ -1,6 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --primary-color: #1B1B1E;
+  --secondary-color: #A68F97;
+  --accent-color: #3B82F6;
+  --text-primary: #FFFFFF;
+  --text-secondary: rgba(255, 255, 255, 0.6);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Ubuntu', sans-serif;
+  background-color: #1B1B1E;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--primary-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--secondary-color);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
+}
+
+/* Smooth scrolling for anchor links */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Button styles */
+.btn {
+  @apply inline-flex items-center px-6 py-3 rounded-lg text-sm font-medium transition-all duration-300;
+}
+
+.btn-primary {
+  @apply bg-blue-500 text-white hover:bg-blue-600 hover:scale-105;
+}
+
+.btn-secondary {
+  @apply bg-blue-500/10 text-white hover:bg-blue-500/20 hover:scale-105;
+}
+
+/* Section spacing */
+section {
+  padding: 5rem 0;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: 500;
+}
+
+h1 {
+  font-size: 2.5rem;
+  line-height: 1.2;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: var(--secondary-color);
+}
+
+h3 {
+  font-size: 1.125rem;
+  color: var(--secondary-color);
+}
+
+h4 {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+h5 {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 2rem;
+  }
+  
+  section {
+    padding: 3rem 0;
+  }
+}
 
 /* Custom Scrollbar Styles */
 ::-webkit-scrollbar {
@@ -37,7 +176,6 @@ html {
 /* Ensure the body takes full height */
 body {
   min-height: 100vh;
-  background-color: #f8fafc;
 }
 
 /* Modern gradient backgrounds */

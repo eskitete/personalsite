@@ -45,14 +45,14 @@ export function Modal({ post, isOpen, onClose }: ModalProps) {
             >
               <X className="w-5 h-5" />
             </button>
-            
+
             <div className="p-6">
               <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-400 mb-4">
                 {post.category}
               </span>
-              
+
               <h2 className="text-2xl font-bold mb-2 text-white">{post.title}</h2>
-              
+
               <div className="flex items-center text-sm text-gray-400 mb-6">
                 <span>{post.author}</span>
                 <span className="mx-2">&bull;</span>
@@ -60,20 +60,9 @@ export function Modal({ post, isOpen, onClose }: ModalProps) {
                 <span className="mx-2">&bull;</span>
                 <span>{post.duration} read</span>
               </div>
-              
+
               <div className="prose prose-invert max-w-none mb-6 text-gray-300">
                 {post.content}
-              </div>
-              
-              <div className="flex flex-wrap gap-2">
-                {post.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 text-sm rounded-full bg-gray-800 text-gray-300"
-                  >
-                    #{tag}
-                  </span>
-                ))}
               </div>
             </div>
           </motion.div>
