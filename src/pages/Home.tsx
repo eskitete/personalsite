@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Code, Terminal, Github, Download, MessageCircle, Mail, ExternalLink } from 'lucide-react';
+import { Shield, Code, Terminal, Github, Download, MessageCircle, Mail, ExternalLink, FileText, X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { Modal } from '../components/Modal';
-import { GradientDots } from '../components/GradientDots';
+import GradientPixelField from '../components/ui/gradient-dots';
+import { Link } from 'react-router-dom';
 
 interface Post {
   title: string;
@@ -16,61 +17,63 @@ interface Post {
 }
 
 const skills = [
+  { name: 'JavaScript/TypeScript', level: 'Advanced' },
   { name: 'Python', level: 'Advanced' },
-  { name: 'JavaScript', level: 'Experienced' },
-  { name: 'HTML/CSS', level: 'Experienced' },
-  { name: 'C/C++', level: 'Experienced' },
-  { name: 'React/Node.js', level: 'Experienced' },
-  { name: 'SQL', level: 'Experienced' }
+  { name: 'Java', level: 'Experienced' },
+  { name: 'C#', level: 'Experienced' },
+  { name: 'HTML/CSS', level: 'Advanced' },
+  { name: 'C/C++', level: 'Experienced' }
 ];
 
 const technologies = [
-  { name: 'Nmap', level: 'Advanced' },
-  { name: 'Wireshark', level: 'Advanced' },
-  { name: 'Metasploit', level: 'Experienced' },
-  { name: 'Burp Suite', level: 'Experienced' },
+  { name: 'AWS (EC2, S3)', level: 'Experienced' },
+  { name: 'Azure', level: 'Experienced' },
+  { name: 'Docker', level: 'Experienced' },
   { name: 'Git/GitHub', level: 'Advanced' },
-  { name: 'Linux/Unix', level: 'Advanced' }
+  { name: 'Linux', level: 'Advanced' },
+  { name: 'Wireshark', level: 'Advanced' },
+  { name: 'Ghidra', level: 'Experienced' },
+  { name: 'SQL/DynamoDB', level: 'Advanced' }
 ];
 
 const services = [
   {
-    title: 'Cybersecurity Assessment',
-    description: 'Comprehensive security audits and vulnerability assessments for organizations'
+    title: 'Full-Stack Development',
+    description: 'Custom web applications using JavaScript, TypeScript, React, and modern development frameworks'
   },
   {
-    title: 'Penetration Testing',
-    description: 'Ethical hacking and security testing to identify and fix vulnerabilities'
+    title: 'Cloud Solutions',
+    description: 'AWS and Azure cloud infrastructure setup, deployment, and management for scalable applications'
   },
   {
-    title: 'Security Consulting',
-    description: 'Expert guidance on implementing robust security measures and best practices'
+    title: 'Cybersecurity Consulting',
+    description: 'Security assessments, vulnerability analysis, and implementation of secure development practices'
   }
 ];
 
 const projects = [
   {
-    title: 'Personal Portfolio Website',
-    description: 'A modern React-based portfolio website showcasing cybersecurity expertise and projects.',
-    technologies: ['React', 'TypeScript', 'Tailwind CSS'],
+    title: 'Sports Higher or Lower Game',
+    description: 'NBA and NFL "Higher or Lower" web game built with TypeScript and React, featuring statistical player comparisons and optimized performance.',
+    technologies: ['TypeScript', 'React', 'Vite', 'Tailwind CSS', 'Python'],
     link: 'https://github.com/eskitete'
   },
   {
-    title: 'Network Security Scanner',
-    description: 'Python-based network vulnerability scanner using Nmap and custom scripts.',
-    technologies: ['Python', 'Nmap', 'Linux'],
+    title: 'AI-Powered Chatbot & Website Development',
+    description: 'Built AI chatbots using n8n and make.com for local service businesses, with custom website integration and CRM handoff capabilities.',
+    technologies: ['n8n', 'make.com', 'JavaScript', 'SQL', 'Google Drive API'],
     link: 'https://github.com/eskitete'
   },
   {
-    title: 'Security Assessment Tool',
-    description: 'Automated security testing tool for web applications and network infrastructure.',
-    technologies: ['Python', 'Burp Suite', 'SQL'],
+    title: 'STEM Research Platform',
+    description: 'Custom block coding platform and 3D-printed educational tools for improving STEM engagement among K-12 students.',
+    technologies: ['Block Coding', '3D Printing', 'Educational Technology'],
     link: 'https://github.com/eskitete'
   },
   {
-    title: 'Cybersecurity Blog',
-    description: 'Technical blog covering cybersecurity topics, tutorials, and best practices.',
-    technologies: ['Jekyll', 'GitHub Pages', 'Markdown'],
+    title: 'IT Infrastructure Management',
+    description: 'Implemented Windows systems configuration and Azure Active Directory integration for educational institutions.',
+    technologies: ['Windows Systems', 'Azure AD', 'Network Infrastructure', 'LAN Management'],
     link: 'https://github.com/eskitete'
   }
 ];
@@ -78,19 +81,52 @@ const projects = [
 export function Home() {
   const [selectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isResumeViewerOpen, setIsResumeViewerOpen] = useState(false);
+  const [blogPosts, setBlogPosts] = useState<Post[]>([]);
+  const [currentBlogIndex, setCurrentBlogIndex] = useState(0);
+
+  // Fetch blog posts
+  useEffect(() => {
+    fetch('/posts.json')
+      .then(res => res.json())
+      .then(data => {
+        setBlogPosts(data.slice(0, 6)); // Show only first 6 posts
+      })
+      .catch(error => {
+        console.error('Error loading blog posts:', error);
+        setBlogPosts([]);
+      });
+  }, []);
+
+  // Carousel navigation functions
+  const nextBlogPost = () => {
+    setCurrentBlogIndex((prev) => (prev + 1) % blogPosts.length);
+  };
+
+  const prevBlogPost = () => {
+    setCurrentBlogIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length);
+  };
 
   return (
     <div className="min-h-screen text-white font-['Ubuntu'] relative">
-      <GradientDots 
-        backgroundColor="#1B1B1E"
-        dotSize={8}
-        spacing={80}
-        duration={25}
-        colorCycleDuration={8}
-        className="-z-10"
+      {/* Main background */}
+      <div className="absolute inset-0 bg-[#1B1B1E] z-0"></div>
+      
+      {/* Gradient Pixel Field */}
+      <GradientPixelField
+        className="absolute inset-0 z-10"
+        pixelSize={.75}
+        spacing={15}
+        colorCycleDuration={6}
+        cursorRadius={50}
+        warpStrength={25}
+        backgroundColor="transparent"
       />
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1B1B1E]/90 backdrop-blur-md border-b border-gray-700/20">
+      
+      {/* Content wrapper */}
+      <div className="relative z-20">
+        {/* Navigation */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1B1B1E]/10 backdrop-blur-md border-b border-gray-700/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <motion.div
@@ -107,6 +143,7 @@ export function Home() {
               <a href="#experience" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Experience</a>
               <a href="#services" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Services</a>
               <a href="#portfolio" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Portfolio</a>
+              <a href="#blog" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Blog</a>
               <a href="#contact" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Contact</a>
             </div>
           </div>
@@ -128,7 +165,7 @@ export function Home() {
                 Rafay Syed
               </h1>
               <h5 className="text-sm font-medium text-white/60 mb-8">
-                Cybersecurity Professional & Security Consultant
+                Electronic Systems Engineering Technology Student & Cybersecurity Expert
               </h5>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
@@ -137,7 +174,7 @@ export function Home() {
                   className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Download CV
+                  View CV
                 </a>
                 <a 
                   href="#contact"
@@ -210,9 +247,11 @@ export function Home() {
               className="text-center lg:text-left"
             >
               <p className="text-gray-300 mb-8 leading-relaxed">
-                I am a dedicated cybersecurity professional with expertise in network security, penetration testing, 
-                and vulnerability assessment. My passion lies in helping organizations strengthen their security posture 
-                through comprehensive assessments and implementing robust security measures.
+                I am a dedicated Electronic Systems Engineering Technology student at Texas A&M University with a passion for 
+                cybersecurity and full-stack development. Currently pursuing my BS degree with a 3.8 GPA, I combine academic 
+                excellence with hands-on experience in research, IT systems, and software development. As a National Cyber Scholar 
+                with Honors and GFACT certified professional, I specialize in creating secure, efficient solutions that bridge 
+                the gap between hardware and software systems.
               </p>
               <a 
                 href="#contact" 
@@ -230,12 +269,12 @@ export function Home() {
               className="grid grid-cols-1 sm:grid-cols-3 gap-6"
             >
               <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                <h3 className="text-3xl font-bold text-blue-400 mb-3">Expert</h3>
-                <h5 className="text-sm text-white/60 font-medium">Level</h5>
+                <h3 className="text-3xl font-bold text-blue-400 mb-3">3.8</h3>
+                <h5 className="text-sm text-white/60 font-medium">GPA</h5>
               </div>
               <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                <h3 className="text-3xl font-bold text-blue-400 mb-3">20+</h3>
-                <h5 className="text-sm text-white/60 font-medium">Certificates</h5>
+                <h3 className="text-3xl font-bold text-blue-400 mb-3">GFACT</h3>
+                <h5 className="text-sm text-white/60 font-medium">Certified</h5>
               </div>
               <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
                 <h3 className="text-3xl font-bold text-blue-400 mb-3">4+</h3>
@@ -382,6 +421,115 @@ export function Home() {
         </div>
       </section>
 
+      {/* Blog Section */}
+      <section id="blog" className="py-16 px-6">
+        <div className="max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-12"
+          >
+            <h5 className="text-sm font-medium text-white/60 mb-4">Latest Articles</h5>
+            <h2 className="text-2xl font-medium text-[#A68F97] mb-12">Blog Posts</h2>
+          </motion.div>
+
+          {blogPosts.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+              {/* Carousel Container */}
+              <div className="relative overflow-hidden rounded-xl bg-gray-800/50 backdrop-blur-sm">
+                <div className="flex transition-transform duration-500 ease-in-out" 
+                     style={{ transform: `translateX(-${currentBlogIndex * 100}%)` }}>
+                  {blogPosts.map((post, index) => (
+                    <div key={index} className="w-full flex-shrink-0 p-8">
+                      <div className="grid md:grid-cols-2 gap-8 items-center">
+                        {/* Blog Post Content */}
+                        <div>
+                          <div className="mb-4">
+                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-400">
+                              {post.category}
+                            </span>
+                          </div>
+                          <h3 className="text-2xl font-medium text-white mb-4">{post.title}</h3>
+                          <p className="text-gray-300 mb-6 leading-relaxed">{post.content}</p>
+                          <div className="flex items-center justify-between text-sm text-gray-400 mb-6">
+                            <span>{post.date}</span>
+                            <span>{post.duration} read</span>
+                          </div>
+                            <div className="flex gap-4">
+                            <Link 
+                              to="/blog" 
+                              className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
+                            >
+                              <BookOpen className="w-4 h-4 mr-2" />
+                              Read More
+                            </Link>
+                            {/* removed per-slide "View All Posts" */}
+                          </div>
+                        </div>
+                        
+                        {/* Blog Post Visual */}
+                        <div className="flex justify-center">
+                          <div className="w-64 h-64 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center">
+                            <BookOpen className="w-16 h-16 text-blue-400" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                 </div>
+
+                {/* Navigation Arrows */}
+                <button
+                  onClick={prevBlogPost}
+                  className="absolute left-4 top-1/2 transform -translate-y-1/2 p-3 bg-gray-800/80 hover:bg-gray-800 rounded-full transition-colors"
+                >
+                  <ChevronLeft className="w-6 h-6 text-white" />
+                </button>
+                <button
+                  onClick={nextBlogPost}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 p-3 bg-gray-800/80 hover:bg-gray-800 rounded-full transition-colors"
+                >
+                  <ChevronRight className="w-6 h-6 text-white" />
+                </button>
+
+                {/* Dots Indicator */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                  {blogPosts.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentBlogIndex(index)}
+                      className={`w-2 h-2 rounded-full transition-colors ${
+                        index === currentBlogIndex ? 'bg-blue-500' : 'bg-gray-600'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* View All Posts (moved below carousel) */}
+              <div className="mt-6 flex justify-center">
+                <Link 
+                  to="/blog" 
+                  className="inline-flex items-center px-6 py-3 bg-blue-500/10 hover:bg-blue-500/20 backdrop-blur-sm rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
+                >
+                  View All Posts
+                </Link>
+              </div>
+            </motion.div>
+          )}
+        
+        </div>
+        
+      </section>
+
       {/* Contact Section */}
       <section id="contact" className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
@@ -396,7 +544,7 @@ export function Home() {
             <h2 className="text-2xl font-medium text-[#A68F97] mb-12">Contact Me</h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -408,9 +556,9 @@ export function Home() {
                 <Mail className="w-8 h-8 text-blue-400" />
               </div>
               <h4 className="text-white font-medium text-lg mb-2">Email</h4>
-              <h5 className="text-sm text-white/60 mb-4">rafay.syed@outlook.com</h5>
+              <h5 className="text-sm text-white/60 mb-4">rafaysyed2100@gmail.com</h5>
               <a 
-                href="mailto:rafay.syed@outlook.com" 
+                href="mailto:rafaysyed2100@gmail.com" 
                 className="inline-block text-blue-400 hover:text-blue-300 transition-colors font-medium"
               >
                 Send a message
@@ -456,6 +604,26 @@ export function Home() {
                 Send a message
               </a>
             </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.3 }}
+              className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-all duration-300 hover:scale-105"
+            >
+              <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                <FileText className="w-8 h-8 text-blue-400" />
+              </div>
+              <h4 className="text-white font-medium text-lg mb-2">Resume</h4>
+              <h5 className="text-sm text-white/60 mb-4">View CV</h5>
+              <button 
+                onClick={() => setIsResumeViewerOpen(true)}
+                className="inline-block text-blue-400 hover:text-blue-300 transition-colors font-medium"
+              >
+                View Resume
+              </button>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -471,6 +639,7 @@ export function Home() {
               <a href="#experience" className="text-gray-400 hover:text-white transition-colors">Experience</a>
               <a href="#services" className="text-gray-400 hover:text-white transition-colors">Services</a>
               <a href="#portfolio" className="text-gray-400 hover:text-white transition-colors">Portfolio</a>
+              <a href="#blog" className="text-gray-400 hover:text-white transition-colors">Blog</a>
               <a href="#contact" className="text-gray-400 hover:text-white transition-colors">Contact</a>
             </div>
             <p className="text-sm text-gray-400">
@@ -486,6 +655,36 @@ export function Home() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
       />
+
+      {/* Resume Viewer Modal */}
+      {isResumeViewerOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="relative w-full max-w-4xl h-[90vh] bg-gray-900 rounded-lg overflow-hidden"
+          >
+            <div className="flex items-center justify-between p-4 bg-gray-800 border-b border-gray-700">
+              <h3 className="text-lg font-medium text-white">Rafay Syed - Resume</h3>
+              <button
+                onClick={() => setIsResumeViewerOpen(false)}
+                className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5 text-gray-400" />
+              </button>
+            </div>
+            <div className="h-full p-4">
+              <iframe
+                src="/Resume.pdf"
+                className="w-full h-full border-0 rounded"
+                title="Resume PDF"
+              />
+            </div>
+          </motion.div>
+        </div>
+      )}
+      </div>
     </div>
   );
 }
