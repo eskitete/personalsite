@@ -51,9 +51,18 @@ export default function GradientPixelField({
   const resizeObsRef = useRef<ResizeObserver | null>(null);
 
   useEffect(() => {
-    const container = containerRef.current!;
-    const canvas = canvasRef.current!;
-    const ctx = canvas.getContext("2d", { alpha: true })!;
+    const container = containerRef.current;
+    const canvas = canvasRef.current;
+
+    if (!container || !canvas) {
+      return;
+    }
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+
+    if (!ctx) {
+      return;
+    }
 
     // device pixel ratio handling (capped)
     const getDPR = () => clamp(window.devicePixelRatio || 1, 1, maxDevicePixelRatio || 2);
@@ -75,15 +84,31 @@ export default function GradientPixelField({
     resizeObsRef.current.observe(container);
 
     let running = true;
-    const start = performance.now();
+    let lastFrame = performance.now();
+    const start = lastFrame;
+    const frameInterval = 1000 / 30; // cap at 30fps to reduce CPU load
+
+    const visibilityState = {
+      isVisible: document.visibilityState === "visible",
+      reduceMotion: false,
+    };
+
+    const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    visibilityState.reduceMotion = reduceMotionQuery.matches;
+    const listeners: Array<() => void> = [];
+    const cleanupMatchMedia = () => {
+      if ("removeEventListener" in reduceMotionQuery) {
+        reduceMotionQuery.removeEventListener("change", handleReduceMotionChange);
+      } else {
+        // @ts-expect-error fallback for older browsers
+        reduceMotionQuery.removeListener(handleReduceMotionChange);
+      }
+    };
 
     const baseHueSpeed = 360 / (colorCycleDuration * 1000); // deg/ms
     const insideHueSpeed = baseHueSpeed * cursorColorBoost;
 
-    const draw = (now: number) => {
-      if (!running) return;
-      const t = now - start;
-
+    const renderFrame = (now: number) => {
       // canvas size in CSS px (because of transform)
       const rect = canvas.getBoundingClientRect();
       const cw = rect.width;
@@ -96,6 +121,7 @@ export default function GradientPixelField({
         ctx.clearRect(0, 0, cw, ch);
       }
 
+      const t = now - start;
       const baseHue = (t * baseHueSpeed) % 360;
 
       const { x: mx, y: my } = cursorRef.current;
@@ -133,7 +159,7 @@ export default function GradientPixelField({
           const spatialPhase = (i + j) * 2; // degrees
           const insideHue = (t * insideHueSpeed + d * 0.3 + wave * 60) % 360;
           const hue = d2 < r2 ? (baseHue + insideHue + spatialPhase) % 360 : (baseHue + spatialPhase + d * 0.05) % 360;
-          const light = d2 < r2 ? 60 + 18 * falloff * (0.5 + 0.5 * wave) : 56 + 6 * Math.sin((now * 0.0012) + i * 0.4);
+          const light = d2 < r2 ? 60 + 18 * falloff * (0.5 + 0.5 * wave) : 56 + 6 * Math.sin(now * 0.0012 + i * 0.4);
           const sat = d2 < r2 ? 74 : 68;
           ctx.fillStyle = `hsl(${hue.toFixed(1)}, ${sat}%, ${light}%)`;
 
@@ -142,11 +168,70 @@ export default function GradientPixelField({
           ctx.fillRect(Math.round(x - s / 2) + 0.5, Math.round(y - s / 2) + 0.5, s, s);
         }
       }
-
-      rafRef.current = requestAnimationFrame(draw);
     };
 
-    rafRef.current = requestAnimationFrame(draw);
+    const startLoop = () => {
+      if (!running || visibilityState.reduceMotion || !visibilityState.isVisible || rafRef.current !== null) {
+        return;
+      }
+      lastFrame = performance.now();
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    const stopLoop = () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
+
+    const tick = (now: number) => {
+      if (!running) {
+        return;
+      }
+      if (visibilityState.reduceMotion || !visibilityState.isVisible) {
+        rafRef.current = null;
+        return;
+      }
+
+      if (now - lastFrame >= frameInterval) {
+        lastFrame = now;
+        renderFrame(now);
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    function handleReduceMotionChange(event: MediaQueryListEvent) {
+      visibilityState.reduceMotion = event.matches;
+      if (visibilityState.reduceMotion) {
+        stopLoop();
+        renderFrame(performance.now());
+      } else {
+        startLoop();
+      }
+    }
+
+    if ("addEventListener" in reduceMotionQuery) {
+      reduceMotionQuery.addEventListener("change", handleReduceMotionChange);
+    } else {
+      // @ts-expect-error fallback for older browsers
+      reduceMotionQuery.addListener(handleReduceMotionChange);
+    }
+
+    const handleVisibilityChange = () => {
+      visibilityState.isVisible = document.visibilityState === "visible";
+      if (visibilityState.isVisible) {
+        startLoop();
+      } else {
+        stopLoop();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    listeners.push(() => document.removeEventListener("visibilitychange", handleVisibilityChange));
+    listeners.push(cleanupMatchMedia);
+
+    renderFrame(performance.now());
+    startLoop();
 
     // --- Pointer tracking on window (works even if other elements overlay) ---
     const updateFromEvent = (clientX: number, clientY: number) => {
@@ -169,6 +254,9 @@ export default function GradientPixelField({
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerleave", onPointerLeave);
       resizeObsRef.current?.disconnect();
+      running = false;
+      stopLoop();
+      listeners.forEach((cleanup) => cleanup());
     };
   }, [backgroundColor, colorCycleDuration, cursorRadius, cursorColorBoost, maxDevicePixelRatio, pixelSize, spacing, warpStrength]);
 

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Shield, Code, Terminal, Github, Download, MessageCircle, Mail, ExternalLink, FileText, X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import GradientPixelField from '../components/ui/gradient-dots';
@@ -84,6 +84,7 @@ export function Home() {
   const [isResumeViewerOpen, setIsResumeViewerOpen] = useState(false);
   const [blogPosts, setBlogPosts] = useState<Post[]>([]);
   const [currentBlogIndex, setCurrentBlogIndex] = useState(0);
+  const prefersReducedMotion = useReducedMotion();
 
   // Fetch blog posts
   useEffect(() => {
@@ -100,10 +101,12 @@ export function Home() {
 
   // Carousel navigation functions
   const nextBlogPost = () => {
+    if (blogPosts.length === 0) return;
     setCurrentBlogIndex((prev) => (prev + 1) % blogPosts.length);
   };
 
   const prevBlogPost = () => {
+    if (blogPosts.length === 0) return;
     setCurrentBlogIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length);
   };
 
@@ -113,15 +116,17 @@ export function Home() {
       <div className="absolute inset-0 bg-[#1B1B1E] z-0"></div>
       
       {/* Gradient Pixel Field */}
-      <GradientPixelField
-        className="absolute inset-0 z-10"
-        pixelSize={.75}
-        spacing={15}
-        colorCycleDuration={6}
-        cursorRadius={50}
-        warpStrength={25}
-        backgroundColor="transparent"
-      />
+      {!prefersReducedMotion && (
+        <GradientPixelField
+          className="absolute inset-0 z-10"
+          pixelSize={0.75}
+          spacing={15}
+          colorCycleDuration={6}
+          cursorRadius={50}
+          warpStrength={25}
+          backgroundColor="transparent"
+        />
+      )}
       
       {/* Content wrapper */}
       <div className="relative z-20">
