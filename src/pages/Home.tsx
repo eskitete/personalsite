@@ -4,17 +4,8 @@ import { Shield, Code, Terminal, Github, Download, MessageCircle, Mail, External
 import { Modal } from '../components/Modal';
 import GradientPixelField from '../components/ui/gradient-dots';
 import { Link } from 'react-router-dom';
-
-interface Post {
-  title: string;
-  category: string;
-  tags: string[];
-  author: string;
-  date: string;
-  duration: string;
-  content: string;
-  link: string;
-}
+import { attachSlugs } from '../utils/posts';
+import type { ApiPost, Post } from '../utils/posts';
 
 const skills = [
   { name: 'JavaScript/TypeScript', level: 'Advanced' },
@@ -85,13 +76,33 @@ export function Home() {
   const [blogPosts, setBlogPosts] = useState<Post[]>([]);
   const [currentBlogIndex, setCurrentBlogIndex] = useState(0);
   const prefersReducedMotion = useReducedMotion();
+  const [allowAnimatedBackground, setAllowAnimatedBackground] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleResize = () => {
+      setAllowAnimatedBackground(window.innerWidth >= 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Fetch blog posts
   useEffect(() => {
     fetch('/posts.json')
       .then(res => res.json())
-      .then(data => {
-        setBlogPosts(data.slice(0, 6)); // Show only first 6 posts
+      .then((data: ApiPost[]) => {
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid posts payload');
+        }
+
+        const postsWithSlugs = attachSlugs(data);
+        setBlogPosts(postsWithSlugs.slice(0, 6)); // Show only first 6 posts
       })
       .catch(error => {
         console.error('Error loading blog posts:', error);
@@ -116,13 +127,13 @@ export function Home() {
       <div className="absolute inset-0 bg-[#1B1B1E] z-0"></div>
       
       {/* Gradient Pixel Field */}
-      {!prefersReducedMotion && (
+      {!prefersReducedMotion && allowAnimatedBackground && (
         <GradientPixelField
           className="absolute inset-0 z-10"
           pixelSize={0.75}
-          spacing={15}
+          spacing={5}
           colorCycleDuration={6}
-          cursorRadius={50}
+          cursorRadius={25}
           warpStrength={25}
           backgroundColor="transparent"
         />
@@ -159,65 +170,65 @@ export function Home() {
       <header id="home" className="pt-20 pb-16 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, ease: "easeOut" }}
-              className="text-center lg:text-left"
-            >
-              <h5 className="text-sm font-medium text-white/60 mb-4">Hello I'm</h5>
-              <h1 className="text-4xl lg:text-5xl font-medium text-white mb-4">
-                Rafay Syed
-              </h1>
-              <h5 className="text-sm font-medium text-white/60 mb-8">
-                Electronic Systems Engineering Technology Student & Cybersecurity Expert
-              </h5>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <a 
-                  href="#contact" 
-                  className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  View CV
-                </a>
-                <a 
-                  href="#contact"
-                  className="inline-flex items-center px-6 py-3 bg-blue-500/10 hover:bg-blue-500/20 backdrop-blur-sm rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
-                >
-                  <MessageCircle className="w-4 h-4 mr-2" />
-                  Let's Talk
-                </a>
-              </div>
-
-              <div className="flex justify-center lg:justify-start mt-8 space-x-4">
-                <a href="https://github.com/eskitete" target="_blank" rel="noopener noreferrer" 
-                   className="p-3 rounded-full hover:bg-gray-700/50 text-gray-300 transition-colors">
-                  <Github className="w-5 h-5" />
-                </a>
-                <a href="https://linkedin.com/in/rafay-syed-463b83203/" target="_blank" rel="noopener noreferrer"
-                   className="p-3 rounded-full hover:bg-gray-700/50 text-gray-300 transition-colors">
-                  <ExternalLink className="w-5 h-5" />
-                </a>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
-              className="flex justify-center lg:justify-end"
-            >
-              <div className="relative w-72 h-72 lg:w-80 lg:h-80">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full animate-pulse"></div>
-                <div className="absolute inset-4 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-full"></div>
-                <div className="absolute inset-8 bg-gradient-to-br from-blue-500/40 to-purple-500/40 rounded-full flex items-center justify-center">
-                  <Shield className="w-16 h-16 lg:w-20 lg:h-20 text-blue-400" />
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+                className="text-center lg:text-left"
+              >
+                <h5 className="text-sm font-medium text-white/60 mb-4">Hello I'm</h5>
+                <h1 className="text-4xl lg:text-5xl font-medium text-white mb-4">
+                  Rafay Syed
+                </h1>
+                <h5 className="text-sm font-medium text-white/60 mb-8">
+                  Electronic Systems Engineering Technology Student & Cybersecurity Expert
+                </h5>
+                
+                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                  <a 
+                    href="#contact" 
+                    className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    View CV
+                  </a>
+                  <a 
+                    href="#contact"
+                    className="inline-flex items-center px-6 py-3 bg-blue-500/10 hover:bg-blue-500/20 backdrop-blur-sm rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
+                  >
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Let's Talk
+                  </a>
                 </div>
-              </div>
-            </motion.div>
-          </div>
 
+                <div className="flex justify-center lg:justify-start mt-8 space-x-4">
+                  <a href="https://github.com/eskitete" target="_blank" rel="noopener noreferrer" 
+                     className="p-3 rounded-full hover:bg-gray-700/50 text-gray-300 transition-colors">
+                    <Github className="w-5 h-5" />
+                  </a>
+                  <a href="https://linkedin.com/in/rafay-syed-463b83203/" target="_blank" rel="noopener noreferrer"
+                     className="p-3 rounded-full hover:bg-gray-700/50 text-gray-300 transition-colors">
+                    <ExternalLink className="w-5 h-5" />
+                  </a>
+                </div>
+              </motion.div>
+
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2, ease: "easeOut" }}
+                className="flex justify-center lg:justify-end"
+              >
+                <div className="relative w-72 h-72 lg:w-80 lg:h-80">
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-full animate-pulse"></div>
+                  <div className="absolute inset-4 bg-gradient-to-br from-blue-500/30 to-purple-500/30 rounded-full"></div>
+                  <div className="absolute inset-8 bg-gradient-to-br from-blue-500/40 to-purple-500/40 rounded-full flex items-center justify-center">
+                    <Shield className="w-16 h-16 lg:w-20 lg:h-20 text-blue-400" />
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+      
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -453,7 +464,7 @@ export function Home() {
                 <div className="flex transition-transform duration-500 ease-in-out" 
                      style={{ transform: `translateX(-${currentBlogIndex * 100}%)` }}>
                   {blogPosts.map((post, index) => (
-                    <div key={index} className="w-full flex-shrink-0 p-8">
+                    <div key={post.slug} className="w-full flex-shrink-0 p-8">
                       <div className="grid md:grid-cols-2 gap-8 items-center">
                         {/* Blog Post Content */}
                         <div>
@@ -470,7 +481,7 @@ export function Home() {
                           </div>
                             <div className="flex gap-4">
                             <Link 
-                              to="/blog" 
+                              to={`/blog/${post.slug}`} 
                               className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
                             >
                               <BookOpen className="w-4 h-4 mr-2" />

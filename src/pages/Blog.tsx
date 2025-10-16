@@ -3,18 +3,9 @@ import { Menu, X, Search, Moon, Sun, ChevronRight, Github, Twitter, ArrowLeft } 
 import { motion, AnimatePresence } from 'framer-motion';
 import { StaggeredText } from '../components/StaggeredText';
 import { Modal } from '../components/Modal';
-import { Link } from 'react-router-dom';
-
-interface Post {
-  title: string;
-  category: string;
-  tags: string[];
-  author: string;
-  date: string;
-  duration: string;
-  content: string;
-  link: string;
-}
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { attachSlugs } from '../utils/posts';
+import type { ApiPost, Post } from '../utils/posts';
 
 export function Blog() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -25,6 +16,8 @@ export function Blog() {
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bubbleStyle, setBubbleStyle] = useState({ width: 0, height: 0, left: 0, top: 0 });
+  const navigate = useNavigate();
+  const { slug } = useParams<{ slug?: string }>();
 
   // Add refs for the buttons
   const allPostsRef = useRef<HTMLButtonElement>(null);
@@ -59,15 +52,38 @@ export function Blog() {
   useEffect(() => {
     fetch('/posts.json')
       .then(res => res.json())
-      .then(data => {
-        // Store posts without URL transformation
-        setPosts(data);
+      .then((data: ApiPost[]) => {
+        if (!Array.isArray(data)) {
+          throw new Error('Invalid posts payload');
+        }
+
+        const postsWithSlugs = attachSlugs(data);
+        setPosts(postsWithSlugs);
       })
       .catch(error => {
         console.error('Error loading posts:', error);
         setPosts([]);
       });
   }, []);
+
+  useEffect(() => {
+    if (!slug) {
+      setIsModalOpen(false);
+      setSelectedPost(null);
+      return;
+    }
+
+    const matchingPost = posts.find(post => post.slug === slug);
+
+    if (matchingPost) {
+      setSelectedPost(matchingPost);
+      setIsModalOpen(true);
+    } else if (posts.length > 0) {
+      setIsModalOpen(false);
+      setSelectedPost(null);
+      navigate('/blog', { replace: true });
+    }
+  }, [slug, posts, navigate]);
 
   const toggleTheme = () => {
     setIsDark(!isDark);
@@ -86,6 +102,19 @@ export function Blog() {
   const openPostModal = (post: Post) => {
     setSelectedPost(post);
     setIsModalOpen(true);
+
+    if (slug !== post.slug) {
+      navigate(`/blog/${post.slug}`);
+    }
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+    setSelectedPost(null);
+
+    if (slug) {
+      navigate('/blog', { replace: true });
+    }
   };
 
   return (
@@ -224,7 +253,7 @@ export function Blog() {
               <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {filteredPosts.map((post, index) => (
                   <motion.article
-                    key={post.title}
+                    key={post.slug}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
@@ -357,10 +386,9 @@ export function Blog() {
         <Modal
           post={selectedPost}
           isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          onClose={handleModalClose}
         />
       </div>
     </div>
   );
 } 
-

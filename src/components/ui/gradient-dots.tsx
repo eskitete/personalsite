@@ -1,34 +1,20 @@
 import React, { useEffect, useRef } from "react";
 
-/**
- * GradientPixelField (v2)
- * - 1px pixel squares supported (default)
- * - Pointer tracking fixed: listens on window so it works even when other elements overlay the background
- * - Safer DPR math; consistent CSS pixel space
- * - Parameters tuned so warp/inner gradient are visible even with tiny pixels
- */
 export type GradientPixelFieldProps = {
-  /** size of each square in CSS px (default 1 for true 1px dots) */
   pixelSize?: number;
-  /** spacing between pixel centers (px). Keep >= pixelSize. default 20 */
   spacing?: number;
-  /** seconds for a full hue rotation */
-  colorCycleDuration?: number; // default 6
-  /** background fill */
-  backgroundColor?: string; // default "transparent"
-  /** radius around cursor that gets special treatment (px) */
-  cursorRadius?: number; // default 160
-  /** strength of the warp displacement (px at center) */
-  warpStrength?: number; // default 14
-  /** faster color factor inside cursor zone (multiplier) */
-  cursorColorBoost?: number; // default 2.25
-  /** cap devicePixelRatio for perf */
-  maxDevicePixelRatio?: number; // default 1.75
+  colorCycleDuration?: number;
+  backgroundColor?: string;
+  cursorRadius?: number;
+  warpStrength?: number;
+  cursorColorBoost?: number;
+  maxDevicePixelRatio?: number;
   className?: string;
   style?: React.CSSProperties;
 };
 
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+type Dot = { x0: number; y0: number; col: number; row: number };
 
 export default function GradientPixelField({
   pixelSize = 1,
@@ -44,11 +30,11 @@ export default function GradientPixelField({
 }: GradientPixelFieldProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
-
-  // Cursor position in CSS pixels relative to the container's top-left
   const cursorRef = useRef({ x: -9999, y: -9999 });
   const rafRef = useRef<number | null>(null);
   const resizeObsRef = useRef<ResizeObserver | null>(null);
+  const canvasSizeRef = useRef({ width: 0, height: 0 });
+  const dotsRef = useRef<Dot[]>([]);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -64,8 +50,38 @@ export default function GradientPixelField({
       return;
     }
 
-    // device pixel ratio handling (capped)
     const getDPR = () => clamp(window.devicePixelRatio || 1, 1, maxDevicePixelRatio || 2);
+
+    const computeEffectiveSpacing = (cw: number, ch: number) => {
+      const baseSpacing = Math.max(spacing, pixelSize, 0.5);
+      const area = cw * ch;
+      const approxDots = area / (baseSpacing * baseSpacing || 1);
+      const maxDots = 6000;
+
+      if (!Number.isFinite(approxDots) || approxDots <= maxDots) {
+        return baseSpacing;
+      }
+
+      const factor = Math.min(Math.sqrt(approxDots / maxDots), 4);
+      return baseSpacing * factor;
+    };
+
+    const rebuildDots = (cw: number, ch: number) => {
+      const effectiveSpacing = computeEffectiveSpacing(cw, ch);
+      const cols = Math.max(1, Math.ceil(cw / effectiveSpacing) + 1);
+      const rows = Math.max(1, Math.ceil(ch / effectiveSpacing) + 1);
+      const nextDots: Dot[] = [];
+
+      for (let row = 0; row < rows; row++) {
+        const y0 = row * effectiveSpacing + effectiveSpacing * 0.5;
+        for (let col = 0; col < cols; col++) {
+          const x0 = col * effectiveSpacing + effectiveSpacing * 0.5;
+          nextDots.push({ x0, y0, col, row });
+        }
+      }
+
+      dotsRef.current = nextDots;
+    };
 
     const resize = () => {
       const rect = container.getBoundingClientRect();
@@ -76,7 +92,9 @@ export default function GradientPixelField({
       canvas.height = Math.max(1, Math.floor(ch * dpr));
       canvas.style.width = `${cw}px`;
       canvas.style.height = `${ch}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // draw in CSS pixel units
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      canvasSizeRef.current = { width: cw, height: ch };
+      rebuildDots(cw, ch);
     };
 
     resize();
@@ -86,7 +104,7 @@ export default function GradientPixelField({
     let running = true;
     let lastFrame = performance.now();
     const start = lastFrame;
-    const frameInterval = 1000 / 30; // cap at 30fps to reduce CPU load
+    const frameInterval = 1000 / 30;
 
     const visibilityState = {
       isVisible: document.visibilityState === "visible",
@@ -95,24 +113,15 @@ export default function GradientPixelField({
 
     const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     visibilityState.reduceMotion = reduceMotionQuery.matches;
-    const listeners: Array<() => void> = [];
-    const cleanupMatchMedia = () => {
-      if ("removeEventListener" in reduceMotionQuery) {
-        reduceMotionQuery.removeEventListener("change", handleReduceMotionChange);
-      } else {
-        // @ts-expect-error fallback for older browsers
-        reduceMotionQuery.removeListener(handleReduceMotionChange);
-      }
-    };
 
-    const baseHueSpeed = 360 / (colorCycleDuration * 1000); // deg/ms
+    const baseHueSpeed = 360 / (colorCycleDuration * 1000);
     const insideHueSpeed = baseHueSpeed * cursorColorBoost;
 
     const renderFrame = (now: number) => {
-      // canvas size in CSS px (because of transform)
-      const rect = canvas.getBoundingClientRect();
-      const cw = rect.width;
-      const ch = rect.height;
+      const { width: cw, height: ch } = canvasSizeRef.current;
+      if (!cw || !ch) {
+        return;
+      }
 
       if (backgroundColor !== "transparent") {
         ctx.fillStyle = backgroundColor;
@@ -121,53 +130,65 @@ export default function GradientPixelField({
         ctx.clearRect(0, 0, cw, ch);
       }
 
+      const dots = dotsRef.current;
+      if (dots.length === 0) {
+        return;
+      }
+
       const t = now - start;
       const baseHue = (t * baseHueSpeed) % 360;
-
       const { x: mx, y: my } = cursorRef.current;
       const r = cursorRadius;
       const r2 = r * r;
+      const sigma = r * 0.6;
 
-      const cols = Math.ceil(cw / spacing) + 1;
-      const rows = Math.ceil(ch / spacing) + 1;
+      for (const { x0, y0, col, row } of dots) {
+        const dx = x0 - mx;
+        const dy = y0 - my;
+        const d2 = dx * dx + dy * dy;
+        const d = Math.sqrt(d2);
 
-      for (let j = 0; j < rows; j++) {
-        const y0 = j * spacing + spacing * 0.5;
-        for (let i = 0; i < cols; i++) {
-          const x0 = i * spacing + spacing * 0.5;
+        const falloff = Math.exp(-d2 / (2 * sigma * sigma));
+        const angle = Math.atan2(dy, dx);
+        const wave = Math.sin(now * 0.002 + d * 0.05) * 0.75;
+        const disp = warpStrength * falloff * wave;
+        const x = x0 + Math.cos(angle) * disp;
+        const y = y0 + Math.sin(angle) * disp;
 
-          const dx = x0 - mx;
-          const dy = y0 - my;
-          const d2 = dx * dx + dy * dy;
-          const d = Math.sqrt(d2);
+        const spatialPhase = (col + row) * 1.6;
+        const insideHue = (t * insideHueSpeed + d * 0.25 + wave * 45) % 360;
+        const hue =
+          d2 < r2
+            ? (baseHue + insideHue + spatialPhase) % 360
+            : (baseHue + spatialPhase + d * 0.05) % 360;
 
-          // smooth falloff for warp
-          const sigma = r * 0.6;
-          const falloff = Math.exp(-d2 / (2 * sigma * sigma));
+        const light =
+          d2 < r2
+            ? 58 + 12 * falloff * (0.5 + 0.5 * wave)
+            : 54 + 4 * Math.sin(now * 0.0012 + col * 0.35);
+        const sat = d2 < r2 ? 64 : 56;
+        ctx.fillStyle = `hsl(${hue.toFixed(1)}, ${sat}%, ${light}%)`;
 
-          // radial displacement with temporal ripple
-          const angle = Math.atan2(dy, dx);
-          const wave = Math.sin(now * 0.003 + d * 0.06);
-          const disp = warpStrength * falloff * wave;
-          const ox = Math.cos(angle) * disp;
-          const oy = Math.sin(angle) * disp;
-
-          const x = x0 + ox;
-          const y = y0 + oy;
-
-          // color
-          const spatialPhase = (i + j) * 2; // degrees
-          const insideHue = (t * insideHueSpeed + d * 0.3 + wave * 60) % 360;
-          const hue = d2 < r2 ? (baseHue + insideHue + spatialPhase) % 360 : (baseHue + spatialPhase + d * 0.05) % 360;
-          const light = d2 < r2 ? 60 + 18 * falloff * (0.5 + 0.5 * wave) : 56 + 6 * Math.sin(now * 0.0012 + i * 0.4);
-          const sat = d2 < r2 ? 74 : 68;
-          ctx.fillStyle = `hsl(${hue.toFixed(1)}, ${sat}%, ${light}%)`;
-
-          // draw 1px square (or whatever pixelSize is), leaving grid gaps via spacing
-          const s = pixelSize;
-          ctx.fillRect(Math.round(x - s / 2) + 0.5, Math.round(y - s / 2) + 0.5, s, s);
-        }
+        const s = pixelSize;
+        ctx.fillRect(Math.round(x - s / 2) + 0.5, Math.round(y - s / 2) + 0.5, s, s);
       }
+    };
+
+    const tick = (now: number) => {
+      if (!running) {
+        return;
+      }
+
+      if (visibilityState.reduceMotion || !visibilityState.isVisible) {
+        rafRef.current = null;
+        return;
+      }
+
+      if (now - lastFrame >= frameInterval) {
+        lastFrame = now;
+        renderFrame(now);
+      }
+      rafRef.current = requestAnimationFrame(tick);
     };
 
     const startLoop = () => {
@@ -185,23 +206,7 @@ export default function GradientPixelField({
       }
     };
 
-    const tick = (now: number) => {
-      if (!running) {
-        return;
-      }
-      if (visibilityState.reduceMotion || !visibilityState.isVisible) {
-        rafRef.current = null;
-        return;
-      }
-
-      if (now - lastFrame >= frameInterval) {
-        lastFrame = now;
-        renderFrame(now);
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-
-    function handleReduceMotionChange(event: MediaQueryListEvent) {
+    const handleReduceMotionChange = (event: MediaQueryListEvent) => {
       visibilityState.reduceMotion = event.matches;
       if (visibilityState.reduceMotion) {
         stopLoop();
@@ -209,14 +214,7 @@ export default function GradientPixelField({
       } else {
         startLoop();
       }
-    }
-
-    if ("addEventListener" in reduceMotionQuery) {
-      reduceMotionQuery.addEventListener("change", handleReduceMotionChange);
-    } else {
-      // @ts-expect-error fallback for older browsers
-      reduceMotionQuery.addListener(handleReduceMotionChange);
-    }
+    };
 
     const handleVisibilityChange = () => {
       visibilityState.isVisible = document.visibilityState === "visible";
@@ -226,14 +224,21 @@ export default function GradientPixelField({
         stopLoop();
       }
     };
+
+    if ("addEventListener" in reduceMotionQuery) {
+      reduceMotionQuery.addEventListener("change", handleReduceMotionChange);
+    } else {
+      // @ts-expect-error fallback for older browsers
+      reduceMotionQuery.addListener(handleReduceMotionChange);
+    }
+
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    listeners.push(() => document.removeEventListener("visibilitychange", handleVisibilityChange));
-    listeners.push(cleanupMatchMedia);
+    const cleanupVisibility = () =>
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
 
     renderFrame(performance.now());
     startLoop();
 
-    // --- Pointer tracking on window (works even if other elements overlay) ---
     const updateFromEvent = (clientX: number, clientY: number) => {
       const rect = container.getBoundingClientRect();
       cursorRef.current.x = clientX - rect.left;
@@ -250,13 +255,21 @@ export default function GradientPixelField({
     window.addEventListener("pointerleave", onPointerLeave, { passive: true });
 
     return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+      running = false;
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerleave", onPointerLeave);
       resizeObsRef.current?.disconnect();
-      running = false;
-      stopLoop();
-      listeners.forEach((cleanup) => cleanup());
+      if ("removeEventListener" in reduceMotionQuery) {
+        reduceMotionQuery.removeEventListener("change", handleReduceMotionChange);
+      } else {
+        // @ts-expect-error fallback for older browsers
+        reduceMotionQuery.removeListener(handleReduceMotionChange);
+      }
+      cleanupVisibility();
     };
   }, [backgroundColor, colorCycleDuration, cursorRadius, cursorColorBoost, maxDevicePixelRatio, pixelSize, spacing, warpStrength]);
 
@@ -267,17 +280,17 @@ export default function GradientPixelField({
   );
 }
 
-// Demo wrapper (optional)
 export function DemoBackground() {
   return (
     <div className="relative w-full h-[80vh] overflow-hidden">
       <GradientPixelField
         className="absolute inset-0"
         pixelSize={1}
-        spacing={20}
-        colorCycleDuration={6}
-        cursorRadius={160}
-        warpStrength={14}
+        spacing={24}
+        colorCycleDuration={12}
+        cursorRadius={140}
+        warpStrength={10}
+        cursorColorBoost={1.5}
         backgroundColor="transparent"
       />
       <div className="relative z-10 flex h-full items-center justify-center">

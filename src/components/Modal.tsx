@@ -1,17 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-
-interface Post {
-  title: string;
-  category: string;
-  tags: string[];
-  author: string;
-  date: string;
-  duration: string;
-  content: string;
-  link: string;
-}
+import type { Post } from '../utils/posts';
 
 interface ModalProps {
   post: Post | null;
