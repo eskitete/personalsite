@@ -1,0 +1,368 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e4]:
+  - complementary [ref=e5]:
+    - link "Back to Home" [ref=e6] [cursor=pointer]:
+      - /url: /
+      - img [ref=e7]
+      - text: Back to Home
+    - generic [ref=e12]: Blog
+    - generic [ref=e13]:
+      - link [ref=e14] [cursor=pointer]:
+        - /url: https://github.com
+        - img [ref=e15]
+      - link [ref=e18] [cursor=pointer]:
+        - /url: https://twitter.com
+        - img [ref=e19]
+      - button [ref=e21] [cursor=pointer]:
+        - img [ref=e22]
+  - main [ref=e32]:
+    - generic [ref=e36]:
+      - img [ref=e37]
+      - searchbox "Search posts..." [ref=e40]
+    - generic [ref=e42]:
+      - heading "Blog Posts" [level=1] [ref=e43]:
+        - generic [ref=e44]: Blog
+        - generic [ref=e45]: Posts
+      - paragraph [ref=e46]:
+        - generic [ref=e47]: Insights
+        - generic [ref=e48]: "on"
+        - generic [ref=e49]: Cybersecurity,
+        - generic [ref=e50]: Development,
+        - generic [ref=e51]: and
+        - generic [ref=e52]: Technology
+      - generic [ref=e54]:
+        - button "All Posts" [ref=e55] [cursor=pointer]
+        - button "Cloud" [ref=e56] [cursor=pointer]
+        - button "Cybersecurity" [ref=e57] [cursor=pointer]
+        - button "Database" [ref=e58] [cursor=pointer]
+        - button "Web Development" [ref=e59] [cursor=pointer]
+        - button "Web Performance" [ref=e60] [cursor=pointer]
+    - generic [ref=e64]:
+      - article [ref=e65] [cursor=pointer]:
+        - generic [ref=e67]: Cybersecurity
+        - heading "Ethical Hacking Basics" [level=3] [ref=e68]:
+          - generic [ref=e69]: Ethical
+          - generic [ref=e70]: Hacking
+          - generic [ref=e71]: Basics
+        - generic [ref=e72]:
+          - generic [ref=e73]: "#Hacking"
+          - generic [ref=e74]: "#Ethics"
+          - generic [ref=e75]: "#Security"
+        - paragraph [ref=e76]: "Hackers on Your Side Ethical hacking uses the same techniques as malicious attackers—but with permission and a clear purpose: uncover vulnerabilities before adversaries do. Engagements begin with detailed scoping…"
+        - generic [ref=e77]:
+          - generic [ref=e78]: Jun 15, 2022
+          - generic [ref=e79]: 8 min read
+      - article [ref=e80] [cursor=pointer]:
+        - generic [ref=e82]: Cloud
+        - heading "Managing Cloud Costs" [level=3] [ref=e83]:
+          - generic [ref=e84]: Managing
+          - generic [ref=e85]: Cloud
+          - generic [ref=e86]: Costs
+        - generic [ref=e87]:
+          - generic [ref=e88]: "#Budget"
+          - generic [ref=e89]: "#Cloud"
+          - generic [ref=e90]: "#Optimization"
+        - paragraph [ref=e91]: "Start With Visibility Cloud platforms make infrastructure instantly available, but without governance, bills grow faster than expected. Establish visibility by: Tagging resources consistently for ownership and…"
+        - generic [ref=e92]:
+          - generic [ref=e93]: Jun 10, 2022
+          - generic [ref=e94]: 7 min read
+      - article [ref=e95] [cursor=pointer]:
+        - generic [ref=e97]: Web Development
+        - heading "Building RESTful APIs" [level=3] [ref=e98]:
+          - generic [ref=e99]: Building
+          - generic [ref=e100]: RESTful
+          - generic [ref=e101]: APIs
+        - generic [ref=e102]:
+          - generic [ref=e103]: "#API"
+          - generic [ref=e104]: "#REST"
+          - generic [ref=e105]: "#Backend"
+        - paragraph [ref=e106]: Embrace the REST Mindset REST (Representational State Transfer) offers a simple, scalable architectural style for APIs. Leverage the standard HTTP verbs—GET, POST, PUT, PATCH, DELETE—and design resource-oriented URLs…
+        - generic [ref=e107]:
+          - generic [ref=e108]: Jun 5, 2022
+          - generic [ref=e109]: 9 min read
+      - article [ref=e110] [cursor=pointer]:
+        - generic [ref=e112]: Database
+        - heading "Advanced SQL Queries" [level=3] [ref=e113]:
+          - generic [ref=e114]: Advanced
+          - generic [ref=e115]: SQL
+          - generic [ref=e116]: Queries
+        - generic [ref=e117]:
+          - generic [ref=e118]: "#SQL"
+          - generic [ref=e119]: "#Advanced"
+          - generic [ref=e120]: "#Queries"
+        - paragraph [ref=e121]: Beyond the Basic SELECT Once you master everyday SELECT statements, advanced SQL techniques unlock powerful transformations. Common Table Expressions (CTEs) break complex queries into readable chunks and enable…
+        - generic [ref=e122]:
+          - generic [ref=e123]: Jun 1, 2022
+          - generic [ref=e124]: 10 min read
+      - article [ref=e125] [cursor=pointer]:
+        - generic [ref=e127]: Web Development
+        - heading "Version Control with Git" [level=3] [ref=e128]:
+          - generic [ref=e129]: Version
+          - generic [ref=e130]: Control
+          - generic [ref=e131]: with
+          - generic [ref=e132]: Git
+        - generic [ref=e133]:
+          - generic [ref=e134]: "#Git"
+          - generic [ref=e135]: "#Version Control"
+          - generic [ref=e136]: "#Collaboration"
+        - paragraph [ref=e137]: Snapshots That Tell a Story Git is the backbone of collaborative software development. It stores snapshots of your project history, linking them together through commits. Each commit records who, what, and why, creating…
+        - generic [ref=e138]:
+          - generic [ref=e139]: May 25, 2022
+          - generic [ref=e140]: 6 min read
+      - article [ref=e141] [cursor=pointer]:
+        - generic [ref=e143]: Database
+        - heading "Understanding Indexes in Databases" [level=3] [ref=e144]:
+          - generic [ref=e145]: Understanding
+          - generic [ref=e146]: Indexes
+          - generic [ref=e147]: in
+          - generic [ref=e148]: Databases
+        - generic [ref=e149]:
+          - generic [ref=e150]: "#SQL"
+          - generic [ref=e151]: "#Indexes"
+          - generic [ref=e152]: "#Optimization"
+        - paragraph [ref=e153]: What Indexes Do Indexes act like the table of contents in a book. They let the database engine jump directly to relevant rows instead of scanning every record. By organizing column values in B-trees or hash structures,…
+        - generic [ref=e154]:
+          - generic [ref=e155]: May 20, 2022
+          - generic [ref=e156]: 7 min read
+      - article [ref=e157] [cursor=pointer]:
+        - generic [ref=e159]: Cybersecurity
+        - heading "Building Secure Websites" [level=3] [ref=e160]:
+          - generic [ref=e161]: Building
+          - generic [ref=e162]: Secure
+          - generic [ref=e163]: Websites
+        - generic [ref=e164]:
+          - generic [ref=e165]: "#Security"
+          - generic [ref=e166]: "#Web"
+          - generic [ref=e167]: "#SSL"
+        - paragraph [ref=e168]: Encrypt the Transport Layer Web security blends secure coding, hardened infrastructure, and vigilant monitoring. Start by enforcing HTTPS everywhere to protect data in transit. Services like Let’s Encrypt automate…
+        - generic [ref=e169]:
+          - generic [ref=e170]: May 15, 2022
+          - generic [ref=e171]: 9 min read
+      - article [ref=e172] [cursor=pointer]:
+        - generic [ref=e174]: Cloud
+        - heading "Introduction to Docker" [level=3] [ref=e175]:
+          - generic [ref=e176]: Introduction
+          - generic [ref=e177]: to
+          - generic [ref=e178]: Docker
+        - generic [ref=e179]:
+          - generic [ref=e180]: "#Docker"
+          - generic [ref=e181]: "#Containers"
+          - generic [ref=e182]: "#Basics"
+        - paragraph [ref=e183]: Containers in a Nutshell Docker packages applications and their dependencies into portable containers, eliminating the dreaded “works on my machine” problem. A Docker image layers the operating system, runtime,…
+        - generic [ref=e184]:
+          - generic [ref=e185]: May 10, 2022
+          - generic [ref=e186]: 7 min read
+      - article [ref=e187] [cursor=pointer]:
+        - generic [ref=e189]: Web Development
+        - heading "Node.js for Backend Developers" [level=3] [ref=e190]:
+          - generic [ref=e191]: Node.js
+          - generic [ref=e192]: for
+          - generic [ref=e193]: Backend
+          - generic [ref=e194]: Developers
+        - generic [ref=e195]:
+          - generic [ref=e196]: "#Node.js"
+          - generic [ref=e197]: "#Backend"
+          - generic [ref=e198]: "#JavaScript"
+        - paragraph [ref=e199]: One Language, Front to Back Node.js enables developers to use JavaScript on the server, unifying front-end and back-end development with a single language. Built on the V8 engine, Node executes JavaScript quickly while…
+        - generic [ref=e200]:
+          - generic [ref=e201]: May 5, 2022
+          - generic [ref=e202]: 8 min read
+      - article [ref=e203] [cursor=pointer]:
+        - generic [ref=e205]: Database
+        - heading "Mastering SQL Joins" [level=3] [ref=e206]:
+          - generic [ref=e207]: Mastering
+          - generic [ref=e208]: SQL
+          - generic [ref=e209]: Joins
+        - generic [ref=e210]:
+          - generic [ref=e211]: "#SQL"
+          - generic [ref=e212]: "#Joins"
+          - generic [ref=e213]: "#Advanced"
+        - paragraph [ref=e214]: Know Your Join Types Joins allow relational databases to combine data from multiple tables, unlocking richer insights than any standalone dataset. Mastering joins starts with understanding how each type treats matching…
+        - generic [ref=e215]:
+          - generic [ref=e216]: May 1, 2022
+          - generic [ref=e217]: 9 min read
+      - article [ref=e218] [cursor=pointer]:
+        - generic [ref=e220]: Web Development
+        - heading "Responsive Web Design Basics" [level=3] [ref=e221]:
+          - generic [ref=e222]: Responsive
+          - generic [ref=e223]: Web
+          - generic [ref=e224]: Design
+          - generic [ref=e225]: Basics
+        - generic [ref=e226]:
+          - generic [ref=e227]: "#HTML"
+          - generic [ref=e228]: "#CSS"
+          - generic [ref=e229]: "#Responsive"
+        - paragraph [ref=e230]: Design for Every Screen Users visit websites from phones, tablets, laptops, and ultra-wide monitors. Responsive design embraces fluid layouts, flexible media, and adaptive breakpoints so experiences feel natural…
+        - generic [ref=e231]:
+          - generic [ref=e232]: Apr 25, 2022
+          - generic [ref=e233]: 6 min read
+      - article [ref=e234] [cursor=pointer]:
+        - generic [ref=e236]: Cybersecurity
+        - heading "Securing APIs with OAuth" [level=3] [ref=e237]:
+          - generic [ref=e238]: Securing
+          - generic [ref=e239]: APIs
+          - generic [ref=e240]: with
+          - generic [ref=e241]: OAuth
+        - generic [ref=e242]:
+          - generic [ref=e243]: "#API"
+          - generic [ref=e244]: "#OAuth"
+          - generic [ref=e245]: "#Security"
+        - paragraph [ref=e246]: Why OAuth Exists APIs power modern applications, enabling native apps, web frontends, and third-party integrations to exchange data securely. OAuth 2.0 is the industry-standard protocol for delegating access without…
+        - generic [ref=e247]:
+          - generic [ref=e248]: Apr 20, 2022
+          - generic [ref=e249]: 8 min read
+      - article [ref=e250] [cursor=pointer]:
+        - generic [ref=e252]: Cloud
+        - heading "Scaling Applications with Kubernetes" [level=3] [ref=e253]:
+          - generic [ref=e254]: Scaling
+          - generic [ref=e255]: Applications
+          - generic [ref=e256]: with
+          - generic [ref=e257]: Kubernetes
+        - generic [ref=e258]:
+          - generic [ref=e259]: "#Kubernetes"
+          - generic [ref=e260]: "#Cloud"
+          - generic [ref=e261]: "#Scaling"
+        - paragraph [ref=e262]: Desired State, Automated Kubernetes abstracts infrastructure into a consistent platform for running containerized workloads at scale. Instead of managing servers manually, you describe the desired state in YAML—how many…
+        - generic [ref=e263]:
+          - generic [ref=e264]: Apr 15, 2022
+          - generic [ref=e265]: 11 min read
+      - article [ref=e266] [cursor=pointer]:
+        - generic [ref=e268]: Web Development
+        - heading "Getting Started with React" [level=3] [ref=e269]:
+          - generic [ref=e270]: Getting
+          - generic [ref=e271]: Started
+          - generic [ref=e272]: with
+          - generic [ref=e273]: React
+        - generic [ref=e274]:
+          - generic [ref=e275]: "#React"
+          - generic [ref=e276]: "#JavaScript"
+          - generic [ref=e277]: "#Frontend"
+        - paragraph [ref=e278]: Why React Changed Frontend Development React popularized a component-based model paired with declarative rendering. Instead of manually manipulating the DOM, you describe how the interface should look for a given state…
+        - generic [ref=e279]:
+          - generic [ref=e280]: Apr 10, 2022
+          - generic [ref=e281]: 10 min read
+      - article [ref=e282] [cursor=pointer]:
+        - generic [ref=e284]: Cybersecurity
+        - heading "Data Security in Cloud Computing" [level=3] [ref=e285]:
+          - generic [ref=e286]: Data
+          - generic [ref=e287]: Security
+          - generic [ref=e288]: in
+          - generic [ref=e289]: Cloud
+          - generic [ref=e290]: Computing
+        - generic [ref=e291]:
+          - generic [ref=e292]: "#Cloud"
+          - generic [ref=e293]: "#Security"
+          - generic [ref=e294]: "#Data"
+        - paragraph [ref=e295]: Understand the Shared Responsibility Model Moving workloads to the cloud introduces a shared responsibility for security. Providers secure the underlying infrastructure—physical hardware, networking, and…
+        - generic [ref=e296]:
+          - generic [ref=e297]: Apr 5, 2022
+          - generic [ref=e298]: 9 min read
+      - article [ref=e299] [cursor=pointer]:
+        - generic [ref=e301]: Web Performance
+        - heading "Optimizing Website Performance" [level=3] [ref=e302]:
+          - generic [ref=e303]: Optimizing
+          - generic [ref=e304]: Website
+          - generic [ref=e305]: Performance
+        - generic [ref=e306]:
+          - generic [ref=e307]: "#Speed"
+          - generic [ref=e308]: "#SEO"
+          - generic [ref=e309]: "#Optimization"
+        - paragraph [ref=e310]: Measure First Fast websites keep users engaged and directly influence revenue, conversion rates, and search rankings. When a page feels sluggish, people bounce before reading the content. Start with measurement tools…
+        - generic [ref=e311]:
+          - generic [ref=e312]: Apr 1, 2022
+          - generic [ref=e313]: 6 min read
+      - article [ref=e314] [cursor=pointer]:
+        - generic [ref=e316]: Cybersecurity
+        - heading "Cybersecurity Essentials" [level=3] [ref=e317]:
+          - generic [ref=e318]: Cybersecurity
+          - generic [ref=e319]: Essentials
+        - generic [ref=e320]:
+          - generic [ref=e321]: "#Security"
+          - generic [ref=e322]: "#Basics"
+          - generic [ref=e323]: "#Protection"
+        - paragraph [ref=e324]: Start With Risk Effective cybersecurity begins with a risk-driven mindset. Rather than attempting to eliminate every conceivable vulnerability, focus on the systems and data that matter most, assess realistic threats,…
+        - generic [ref=e325]:
+          - generic [ref=e326]: Mar 25, 2022
+          - generic [ref=e327]: 9 min read
+      - article [ref=e328] [cursor=pointer]:
+        - generic [ref=e330]: Cloud
+        - heading "Understanding Cloud Storage" [level=3] [ref=e331]:
+          - generic [ref=e332]: Understanding
+          - generic [ref=e333]: Cloud
+          - generic [ref=e334]: Storage
+        - generic [ref=e335]:
+          - generic [ref=e336]: "#AWS"
+          - generic [ref=e337]: "#Google Cloud"
+          - generic [ref=e338]: "#Basics"
+        - paragraph [ref=e339]: "What Cloud Storage Solves Cloud storage platforms solve a universal challenge: keeping data available, resilient, and cost-effective without building and maintaining your own hardware. Services such as Amazon S3, Google…"
+        - generic [ref=e340]:
+          - generic [ref=e341]: Mar 20, 2022
+          - generic [ref=e342]: 7 min read
+      - article [ref=e343] [cursor=pointer]:
+        - generic [ref=e345]: Database
+        - heading "Introduction to Databases" [level=3] [ref=e346]:
+          - generic [ref=e347]: Introduction
+          - generic [ref=e348]: to
+          - generic [ref=e349]: Databases
+        - generic [ref=e350]:
+          - generic [ref=e351]: "#SQL"
+          - generic [ref=e352]: "#Data"
+          - generic [ref=e353]: "#Basics"
+        - paragraph [ref=e354]: Why Databases Matter Databases sit at the heart of nearly every software system, from personal finance apps to global e-commerce platforms. At their core, databases give us a reliable, organized way to store, retrieve,…
+        - generic [ref=e355]:
+          - generic [ref=e356]: Mar 15, 2022
+          - generic [ref=e357]: 8 min read
+  - contentinfo [ref=e358]:
+    - generic [ref=e359]:
+      - generic [ref=e360]:
+        - generic [ref=e361]:
+          - heading "About Me" [level=3] [ref=e362]
+          - paragraph [ref=e363]: Cybersecurity expert and full-stack developer passionate about creating secure and efficient solutions.
+          - generic [ref=e364]:
+            - link [ref=e365] [cursor=pointer]:
+              - /url: https://github.com
+              - img [ref=e366]
+            - link [ref=e369] [cursor=pointer]:
+              - /url: https://twitter.com
+              - img [ref=e370]
+        - generic [ref=e372]:
+          - heading "Quick Links" [level=3] [ref=e373]
+          - list [ref=e374]:
+            - listitem [ref=e375]:
+              - link "Home" [ref=e376] [cursor=pointer]:
+                - /url: /
+            - listitem [ref=e377]:
+              - link "Blog" [ref=e378] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e379]:
+              - link "Contact" [ref=e380] [cursor=pointer]:
+                - /url: "#contact"
+        - generic [ref=e381]:
+          - heading "Categories" [level=3] [ref=e382]
+          - list [ref=e383]:
+            - listitem [ref=e384]:
+              - button "Cloud" [ref=e385] [cursor=pointer]
+            - listitem [ref=e386]:
+              - button "Cybersecurity" [ref=e387] [cursor=pointer]
+            - listitem [ref=e388]:
+              - button "Database" [ref=e389] [cursor=pointer]
+            - listitem [ref=e390]:
+              - button "Web Development" [ref=e391] [cursor=pointer]
+            - listitem [ref=e392]:
+              - button "Web Performance" [ref=e393] [cursor=pointer]
+        - generic [ref=e394]:
+          - heading "Contact Me" [level=3] [ref=e395]
+          - generic [ref=e396]:
+            - paragraph [ref=e397]: Have a question or want to work together?
+            - link "Get in Touch" [ref=e398] [cursor=pointer]:
+              - /url: mailto:contact@example.com
+      - generic [ref=e400]:
+        - paragraph [ref=e401]: © 2025 Rafay Syed. All rights reserved.
+        - generic [ref=e402]:
+          - link "Privacy Policy" [ref=e403] [cursor=pointer]:
+            - /url: "#"
+          - link "Terms of Service" [ref=e404] [cursor=pointer]:
+            - /url: "#"
+```

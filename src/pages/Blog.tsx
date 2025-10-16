@@ -1,15 +1,26 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Menu, X, Search, Moon, Sun, ChevronRight, Github, Twitter, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StaggeredText } from '../components/StaggeredText';
 import { Modal } from '../components/Modal';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { attachSlugs } from '../utils/posts';
-import type { ApiPost, Post } from '../utils/posts';
+import { getAllPosts } from '../lib/postStore';
+import type { Post } from '../utils/posts';
 
 export function Blog() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const posts = useMemo<Post[]>(() => getAllPosts(), []);
+  const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') {
+      return true;
+    }
+    return window.innerWidth >= 1024;
+  });
+  const [isDesktop, setIsDesktop] = useState<boolean>(() => {
+    if (typeof window === 'undefined') {
+      return true;
+    }
+    return window.innerWidth >= 1024;
+  });
   const [isDark, setIsDark] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -22,6 +33,26 @@ export function Blog() {
   // Add refs for the buttons
   const allPostsRef = useRef<HTMLButtonElement>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const handleResize = () => {
+      const isLg = window.innerWidth >= 1024;
+      setIsDesktop(isLg);
+      if (isLg) {
+        setSidebarOpen(true);
+      } else {
+        setSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Update bubble position when category changes
   useEffect(() => {
@@ -50,23 +81,6 @@ export function Blog() {
   }, [selectedCategory]);
 
   useEffect(() => {
-    fetch('/posts.json')
-      .then(res => res.json())
-      .then((data: ApiPost[]) => {
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid posts payload');
-        }
-
-        const postsWithSlugs = attachSlugs(data);
-        setPosts(postsWithSlugs);
-      })
-      .catch(error => {
-        console.error('Error loading posts:', error);
-        setPosts([]);
-      });
-  }, []);
-
-  useEffect(() => {
     if (!slug) {
       setIsModalOpen(false);
       setSelectedPost(null);
@@ -90,14 +104,25 @@ export function Blog() {
     document.documentElement.classList.toggle('dark');
   };
 
-  const filteredPosts = posts.filter(post => {
-    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         post.content.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesCategory = !selectedCategory || post.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredPosts = useMemo(() => {
+    const normalizedQuery = searchQuery.trim().toLowerCase();
 
-  const uniqueCategories = Array.from(new Set(posts.map(post => post.category)));
+    return posts.filter(post => {
+      const matchesSearch =
+        !normalizedQuery ||
+        post.title.toLowerCase().includes(normalizedQuery) ||
+        post.content.toLowerCase().includes(normalizedQuery) ||
+        post.tags.some(tag => tag.toLowerCase().includes(normalizedQuery));
+
+      const matchesCategory = !selectedCategory || post.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [posts, searchQuery, selectedCategory]);
+
+  const uniqueCategories = useMemo(
+    () => Array.from(new Set(posts.map(post => post.category))).sort(),
+    [posts]
+  );
 
   const openPostModal = (post: Post) => {
     setSelectedPost(post);
@@ -123,12 +148,32 @@ export function Blog() {
         {/* Sidebar */}
         <AnimatePresence>
           {sidebarOpen && (
-            <motion.aside
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              exit={{ x: -300 }}
-              className="fixed inset-y-0 left-0 z-40 w-64 bg-gray-800/50 backdrop-blur-sm border-r border-gray-700/50 p-6 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 dark:scrollbar-thumb-gray-500 scrollbar-track-transparent"
-            >
+            <>
+              {!isDesktop && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 0.5 }}
+                  exit={{ opacity: 0 }}
+                  onClick={() => setSidebarOpen(false)}
+                  className="fixed inset-0 z-30 bg-black lg:hidden"
+                />
+              )}
+              <motion.aside
+                initial={{ x: -300 }}
+                animate={{ x: 0 }}
+                exit={{ x: -300 }}
+                className={`fixed inset-y-0 left-0 z-40 bg-gray-800/50 backdrop-blur-sm border-r border-gray-700/50 p-6 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 dark:scrollbar-thumb-gray-500 scrollbar-track-transparent ${
+                  isDesktop ? 'w-64' : 'w-full max-w-xs'
+                }`}
+              >
+                {!isDesktop && (
+                  <button
+                    onClick={() => setSidebarOpen(false)}
+                    className="absolute top-4 right-4 p-2 rounded-full bg-gray-900/70 text-gray-300 hover:text-white"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                )}
               {/* Back to Home Button */}
               <Link 
                 to="/" 
@@ -160,28 +205,29 @@ export function Blog() {
                 </button>
               </div>
             </motion.aside>
+            </>
           )}
         </AnimatePresence>
 
-        <main className={`flex-1 ${sidebarOpen ? 'lg:ml-64' : ''}`}>
-          <header className="sticky top-0 z-30 backdrop-blur-sm bg-gray-900/50 border-b border-gray-700/50">
-            <div className="flex items-center px-6 h-16">
+        <main className={`flex-1 ${isDesktop && sidebarOpen ? 'lg:ml-64' : ''}`}>
+          <header className="sticky top-0 z-30 backdrop-blur-lg bg-gray-900/30 border-b border-gray-700/30">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 px-4 sm:px-6 py-3">
               <button
-                onClick={() => setSidebarOpen(true)}
-                className={`mr-4 lg:hidden ${sidebarOpen ? 'hidden' : ''}`}
+                onClick={() => setSidebarOpen(prev => !prev)}
+                className="text-gray-200 hover:text-white transition-colors lg:hidden"
               >
-                <Menu className="w-6 h-6" />
+                {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
               </button>
               
-              <div className="flex-1 flex items-center">
-                <div className="relative flex-1 max-w-2xl">
+              <div className="flex-1 flex items-center w-full">
+                <div className="relative flex-1 max-w-full sm:max-w-2xl">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="search"
                     placeholder="Search posts..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-gray-800/50 border border-gray-700/50 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="w-full pl-10 pr-4 py-2 bg-gray-800/40 border border-gray-700/30 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
                   />
                 </div>
               </div>
@@ -208,6 +254,7 @@ export function Blog() {
                   <motion.button
                     ref={allPostsRef}
                     onClick={() => setSelectedCategory(null)}
+                    data-testid="category-filter"
                     className={`relative px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
                       selectedCategory === null
                         ? 'text-white'
@@ -221,6 +268,7 @@ export function Blog() {
                       key={category}
                       ref={el => categoryRefs.current[category] = el}
                       onClick={() => setSelectedCategory(category)}
+                      data-testid="category-filter"
                       className={`relative px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
                         selectedCategory === category
                           ? 'text-white'
@@ -259,6 +307,7 @@ export function Blog() {
                     transition={{ delay: index * 0.1 }}
                     viewport={{ once: true }}
                     className="group relative bg-gray-800/50 backdrop-blur-sm rounded-xl p-6 hover:bg-gray-800/70 transition-all duration-300 cursor-pointer hover-card"
+                    data-testid="blog-post"
                     onClick={() => openPostModal(post)}
                   >
                     <div className="mb-4">
@@ -271,8 +320,18 @@ export function Blog() {
                       as="h3"
                       className="text-xl font-semibold mb-2 group-hover:text-blue-400 transition-colors"
                     />
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {post.tags.slice(0, 4).map(tag => (
+                        <span
+                          key={tag}
+                          className="px-2 py-1 text-xs font-medium bg-blue-500/10 text-blue-300 rounded-full"
+                        >
+                          #{tag}
+                        </span>
+                      ))}
+                    </div>
                     <p className="text-gray-400 mb-4 line-clamp-3">
-                      {post.content}
+                      {post.excerpt}
                     </p>
                     <div className="flex items-center justify-between text-sm text-gray-500">
                       <span>{post.date}</span>

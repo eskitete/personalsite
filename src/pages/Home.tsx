@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import { Shield, Code, Terminal, Github, Download, MessageCircle, Mail, ExternalLink, FileText, X, ChevronLeft, ChevronRight, BookOpen } from 'lucide-react';
-import { Modal } from '../components/Modal';
+import { useState, useEffect, useMemo } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { Shield, Code, Terminal, Github, Download, MessageCircle, Mail, ExternalLink, FileText, X, ChevronLeft, ChevronRight, BookOpen, Menu } from 'lucide-react';
 import GradientPixelField from '../components/ui/gradient-dots';
 import { Link } from 'react-router-dom';
-import { attachSlugs } from '../utils/posts';
-import type { ApiPost, Post } from '../utils/posts';
+import { getRecentPosts } from '../lib/postStore';
+import type { Post } from '../utils/posts';
 
 const skills = [
   { name: 'JavaScript/TypeScript', level: 'Advanced' },
@@ -69,14 +68,23 @@ const projects = [
   }
 ];
 
+const navLinks = [
+  { label: 'Home', href: '#home' },
+  { label: 'About', href: '#about' },
+  { label: 'Experience', href: '#experience' },
+  { label: 'Services', href: '#services' },
+  { label: 'Portfolio', href: '#portfolio' },
+  { label: 'Blog', href: '#blog' },
+  { label: 'Contact', href: '#contact' }
+];
+
 export function Home() {
-  const [selectedPost] = useState<Post | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isResumeViewerOpen, setIsResumeViewerOpen] = useState(false);
-  const [blogPosts, setBlogPosts] = useState<Post[]>([]);
   const [currentBlogIndex, setCurrentBlogIndex] = useState(0);
   const prefersReducedMotion = useReducedMotion();
   const [allowAnimatedBackground, setAllowAnimatedBackground] = useState(false);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const blogPosts = useMemo<Post[]>(() => getRecentPosts(6), []);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -92,23 +100,32 @@ export function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Fetch blog posts
   useEffect(() => {
-    fetch('/posts.json')
-      .then(res => res.json())
-      .then((data: ApiPost[]) => {
-        if (!Array.isArray(data)) {
-          throw new Error('Invalid posts payload');
-        }
+    if (typeof window === 'undefined') {
+      return;
+    }
 
-        const postsWithSlugs = attachSlugs(data);
-        setBlogPosts(postsWithSlugs.slice(0, 6)); // Show only first 6 posts
-      })
-      .catch(error => {
-        console.error('Error loading blog posts:', error);
-        setBlogPosts([]);
-      });
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) {
+        setMobileNavOpen(false);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (mobileNavOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileNavOpen]);
 
   // Carousel navigation functions
   const nextBlogPost = () => {
@@ -133,7 +150,7 @@ export function Home() {
           pixelSize={0.75}
           spacing={5}
           colorCycleDuration={6}
-          cursorRadius={25}
+          cursorRadius={50}
           warpStrength={25}
           backgroundColor="transparent"
         />
@@ -142,29 +159,68 @@ export function Home() {
       {/* Content wrapper */}
       <div className="relative z-20">
         {/* Navigation */}
-        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1B1B1E]/10 backdrop-blur-md border-b border-gray-700/20">
-        <div className="max-w-7xl mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#1B1B1E]/30 backdrop-blur-lg border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2, duration: 0.6 }}
-              className="text-xl font-bold text-white"
+              className="text-lg sm:text-xl font-bold tracking-wide text-white"
             >
               RAFAY SYED
             </motion.div>
-            <div className="flex items-center space-x-4 md:space-x-8">
-              <a href="#home" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Home</a>
-              <a href="#about" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">About</a>
-              <a href="#experience" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Experience</a>
-              <a href="#services" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Services</a>
-              <a href="#portfolio" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Portfolio</a>
-              <a href="#blog" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Blog</a>
-              <a href="#contact" className="text-gray-400 hover:text-white transition-colors text-sm md:text-base">Contact</a>
+            <div className="hidden lg:flex items-center space-x-6 xl:space-x-8">
+              {navLinks.map(link => (
+                <a
+                  key={link.href}
+                  href={link.href}
+                  className="text-gray-300 hover:text-white transition-colors text-sm xl:text-base"
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
+            <button
+              type="button"
+              onClick={() => setMobileNavOpen(prev => !prev)}
+              className="lg:hidden text-gray-200 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-md"
+            >
+              {mobileNavOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
-        </div>
-      </nav>
+        </nav>
+
+        <AnimatePresence>
+          {mobileNavOpen && (
+            <>
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setMobileNavOpen(false)}
+                className="fixed inset-0 z-40 bg-black"
+              />
+              <motion.div
+                initial={{ y: -20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -20, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed top-[64px] left-4 right-4 z-50 rounded-2xl bg-[#1B1B1E]/90 backdrop-blur-xl border border-white/10 shadow-xl p-6 space-y-4 lg:hidden"
+              >
+                {navLinks.map(link => (
+                  <a
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setMobileNavOpen(false)}
+                    className="block text-base font-medium text-gray-200 hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
       {/* Hero Section */}
       <header id="home" className="pt-20 pb-16 px-6">
@@ -474,7 +530,7 @@ export function Home() {
                             </span>
                           </div>
                           <h3 className="text-2xl font-medium text-white mb-4">{post.title}</h3>
-                          <p className="text-gray-300 mb-6 leading-relaxed">{post.content}</p>
+                          <p className="text-gray-300 mb-6 leading-relaxed">{post.excerpt}</p>
                           <div className="flex items-center justify-between text-sm text-gray-400 mb-6">
                             <span>{post.date}</span>
                             <span>{post.duration} read</span>
@@ -664,13 +720,6 @@ export function Home() {
           </div>
         </div>
       </footer>
-
-      {/* Modal */}
-      <Modal
-        post={selectedPost}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
 
       {/* Resume Viewer Modal */}
       {isResumeViewerOpen && (

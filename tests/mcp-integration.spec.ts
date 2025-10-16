@@ -49,23 +49,23 @@ test.describe('MCP Integration Tests', () => {
     });
   });
 
-  test('should test MCP error handling and recovery', async ({ page }) => {
-    // Test MCP error scenarios
-    await page.route('**/posts.json', route => route.abort());
+  test('should verify blog data availability in MCP fallback mode', async ({ page }) => {
+    let intercepted = false;
+    await page.route('**/posts.json', route => {
+      intercepted = true;
+      return route.continue();
+    });
     
-    // Navigate to blog page with MCP context
     await mcpHelper.navigateWithMCP('/blog', { 
       errorHandling: true,
       fallbackMode: true 
     });
     
-    // Should handle missing data gracefully
     await expect(page.locator('h1:has-text("Blog Posts")')).toBeVisible();
-    
-    // Test MCP recovery
+    expect(await page.locator('[data-testid="blog-post"]').count()).toBeGreaterThan(0);
+    expect(intercepted).toBe(false);
+
     await page.unroute('**/posts.json');
-    await page.reload();
-    await expect(page.locator('text=Blog Posts')).toBeVisible();
   });
 
   test('should test MCP accessibility integration', async ({ page }) => {

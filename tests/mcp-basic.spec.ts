@@ -77,22 +77,22 @@ test.describe('MCP Basic Tests', () => {
     await expect(page).toHaveURL(/blog/);
   });
 
-  test('should test MCP error handling', async ({ page }) => {
-    // Test MCP error scenarios
-    await page.route('**/posts.json', route => route.abort());
+  test('should confirm blog posts are bundled with the app', async ({ page }) => {
+    let intercepted = false;
+    await page.route('**/posts.json', route => {
+      intercepted = true;
+      return route.continue();
+    });
     
-    // Navigate to blog page with MCP context
     await mcpHelper.navigateWithMCP('/blog', { 
       errorHandling: true,
       fallbackMode: true 
     });
     
-    // Should handle missing data gracefully
     await expect(page.locator('h1').filter({ hasText: 'Blog Posts' })).toBeVisible();
-    
-    // Test MCP recovery
+    expect(await page.locator('[data-testid="blog-post"]').count()).toBeGreaterThan(0);
+    expect(intercepted).toBe(false);
+
     await page.unroute('**/posts.json');
-    await page.reload();
-    await expect(page.locator('h1').filter({ hasText: 'Blog Posts' })).toBeVisible();
   });
 });

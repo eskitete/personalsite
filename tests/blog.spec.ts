@@ -32,14 +32,13 @@ test.describe('Blog Page - MCP Integration', () => {
 
   test('should filter posts by category with MCP', async ({ page }) => {
     // Wait for posts to load
-    await page.waitForSelector('[data-testid="blog-post"], .group', { timeout: 10000 });
-    
-    // Test category filtering
-    const categoryButtons = page.locator('button').filter({ hasText: /All Posts|Cybersecurity|Development|Technology/ });
+    await page.waitForSelector('[data-testid="blog-post"]', { timeout: 10000 });
+
+    const categoryButtons = page.locator('[data-testid="category-filter"]');
     await expect(categoryButtons.first()).toBeVisible();
-    
-    // Test MCP functionality for category selection
-    await mcpHelper.assertMCPFunctionality('button:has-text("All Posts")', 'clickable');
+    expect(await categoryButtons.count()).toBeGreaterThan(1);
+
+    await mcpHelper.assertMCPFunctionality('[data-testid="category-filter"]', 'clickable');
   });
 
   test('should search posts with MCP integration', async ({ page }) => {
@@ -57,10 +56,10 @@ test.describe('Blog Page - MCP Integration', () => {
 
   test('should open post modal with MCP context', async ({ page }) => {
     // Wait for posts to load
-    await page.waitForSelector('[data-testid="blog-post"], .group', { timeout: 10000 });
+    await page.waitForSelector('[data-testid="blog-post"]', { timeout: 10000 });
     
     // Click on first post
-    const firstPost = page.locator('article').first();
+    const firstPost = page.locator('[data-testid="blog-post"]').first();
     await firstPost.click();
     
     // Verify modal opens
@@ -100,14 +99,19 @@ test.describe('Blog Page - MCP Integration', () => {
     console.log('Blog Page MCP Performance:', metrics);
   });
 
-  test('should test MCP error handling', async ({ page }) => {
-    // Test MCP error scenarios
-    await page.route('**/posts.json', route => route.abort());
-    
-    // Navigate and verify error handling
+  test('should render posts without network dependency', async ({ page }) => {
+    let intercepted = false;
+    await page.route('**/posts.json', route => {
+      intercepted = true;
+      return route.continue();
+    });
+
     await mcpHelper.navigateWithMCP('/blog');
-    
-    // Should handle missing data gracefully
+
     await expect(page.locator('h1:has-text("Blog Posts")')).toBeVisible();
+    expect(await page.locator('[data-testid="blog-post"]').count()).toBeGreaterThan(0);
+    expect(intercepted).toBe(false);
+
+    await page.unroute('**/posts.json');
   });
 });
