@@ -73,7 +73,7 @@ const navLinks = [
   { label: 'About', href: '#about' },
   { label: 'Experience', href: '#experience' },
   { label: 'Services', href: '#services' },
-  { label: 'Portfolio', href: '#portfolio' },
+  { label: 'Projects', href: '#projects' },
   { label: 'Blog', href: '#blog' },
   { label: 'Contact', href: '#contact' }
 ];
@@ -444,8 +444,8 @@ export function Home() {
         </div>
       </section>
 
-      {/* Portfolio Section */}
-      <section id="portfolio" className="py-16 px-6">
+      {/* Projects Section */}
+      <section id="projects" className="py-16 px-6">
         <div className="max-w-7xl mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -455,7 +455,7 @@ export function Home() {
             className="text-center mb-12"
           >
             <h5 className="text-sm font-medium text-white/60 mb-4">My Recent Projects</h5>
-            <h2 className="text-2xl font-medium text-[#A68F97] mb-12">Portfolio</h2>
+            <h2 className="text-2xl font-medium text-[#A68F97] mb-12">Projects</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
@@ -490,6 +490,21 @@ export function Home() {
               </motion.div>
             ))}
           </div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="mt-10 flex justify-center"
+          >
+            <Link
+              to="/blog/category/projects"
+              className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 backdrop-blur-sm text-sm font-medium text-blue-200 transition-all duration-300 hover:scale-105"
+            >
+              View All Projects
+            </Link>
+          </motion.div>
         </div>
       </section>
 

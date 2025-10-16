@@ -7,6 +7,21 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { getAllPosts } from '../lib/postStore';
 import type { Post } from '../utils/posts';
 
+const supplementalCategories = ['Projects', 'Case Studies'] as const;
+
+const normalizeCategory = (category: string) =>
+  category === 'Web Performance' ? 'Web Development' : category;
+
+const toCategorySlug = (category: string) =>
+  normalizeCategory(category)
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+const fromCategorySlug = (slug: string, categories: string[]) =>
+  categories.find(category => toCategorySlug(category) === slug);
+
 export function Blog() {
   const posts = useMemo<Post[]>(() => getAllPosts(), []);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
@@ -28,11 +43,17 @@ export function Blog() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [bubbleStyle, setBubbleStyle] = useState({ width: 0, height: 0, left: 0, top: 0 });
   const navigate = useNavigate();
-  const { slug } = useParams<{ slug?: string }>();
+  const { slug, categorySlug } = useParams<{ slug?: string; categorySlug?: string }>();
 
   // Add refs for the buttons
   const allPostsRef = useRef<HTMLButtonElement>(null);
   const categoryRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -108,21 +129,55 @@ export function Blog() {
     const normalizedQuery = searchQuery.trim().toLowerCase();
 
     return posts.filter(post => {
+      const postCategory = normalizeCategory(post.category);
       const matchesSearch =
         !normalizedQuery ||
         post.title.toLowerCase().includes(normalizedQuery) ||
         post.content.toLowerCase().includes(normalizedQuery) ||
         post.tags.some(tag => tag.toLowerCase().includes(normalizedQuery));
 
-      const matchesCategory = !selectedCategory || post.category === selectedCategory;
+      const matchesCategory =
+        !selectedCategory || postCategory === normalizeCategory(selectedCategory);
       return matchesSearch && matchesCategory;
     });
   }, [posts, searchQuery, selectedCategory]);
 
-  const uniqueCategories = useMemo(
-    () => Array.from(new Set(posts.map(post => post.category))).sort(),
-    [posts]
-  );
+  const uniqueCategories = useMemo(() => {
+    const normalizedCategories = posts.map(post => normalizeCategory(post.category));
+
+    const categorySet = new Set(normalizedCategories);
+    supplementalCategories.forEach(category => categorySet.delete(category));
+
+    const sorted = Array.from(categorySet).sort((a, b) => a.localeCompare(b));
+
+    supplementalCategories.forEach(category => {
+      sorted.push(category);
+    });
+
+    return sorted;
+  }, [posts]);
+
+  useEffect(() => {
+    if (!categorySlug) {
+      setSelectedCategory(null);
+      return;
+    }
+
+    const matchedCategory = fromCategorySlug(categorySlug, uniqueCategories);
+    setSelectedCategory(matchedCategory ?? null);
+  }, [categorySlug, uniqueCategories]);
+
+  const handleCategorySelect = (category: string | null) => {
+    if (!category) {
+      setSelectedCategory(null);
+      navigate('/blog');
+      return;
+    }
+
+    const normalized = normalizeCategory(category);
+    setSelectedCategory(normalized);
+    navigate(`/blog/category/${toCategorySlug(normalized)}`);
+  };
 
   const openPostModal = (post: Post) => {
     setSelectedPost(post);
@@ -138,7 +193,11 @@ export function Blog() {
     setSelectedPost(null);
 
     if (slug) {
-      navigate('/blog', { replace: true });
+      if (selectedCategory) {
+        navigate(`/blog/category/${toCategorySlug(selectedCategory)}`, { replace: true });
+      } else {
+        navigate('/blog', { replace: true });
+      }
     }
   };
 
@@ -250,12 +309,12 @@ export function Blog() {
               
               {/* Modern Tab Selector */}
               <div className="relative">
-                <div className="flex gap-1 p-1 bg-gray-800/50 rounded-lg">
+                <div className="flex gap-1 p-1 bg-gray-800/50 rounded-lg overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-600/70 scrollbar-track-transparent">
                   <motion.button
                     ref={allPostsRef}
-                    onClick={() => setSelectedCategory(null)}
+                    onClick={() => handleCategorySelect(null)}
                     data-testid="category-filter"
-                    className={`relative px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
+                    className={`relative inline-flex px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
                       selectedCategory === null
                         ? 'text-white'
                         : 'text-gray-400 hover:text-gray-300'
@@ -267,9 +326,9 @@ export function Blog() {
                     <motion.button
                       key={category}
                       ref={el => categoryRefs.current[category] = el}
-                      onClick={() => setSelectedCategory(category)}
+                      onClick={() => handleCategorySelect(category)}
                       data-testid="category-filter"
-                      className={`relative px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
+                      className={`relative inline-flex px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
                         selectedCategory === category
                           ? 'text-white'
                           : 'text-gray-400 hover:text-gray-300'
@@ -395,7 +454,7 @@ export function Blog() {
                   {uniqueCategories.slice(0, 5).map(category => (
                     <li key={category}>
                       <button
-                        onClick={() => setSelectedCategory(category)}
+                        onClick={() => handleCategorySelect(category)}
                         className="text-gray-400 hover:text-blue-400 transition-colors"
                       >
                         {category}
