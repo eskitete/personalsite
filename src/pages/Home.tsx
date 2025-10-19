@@ -320,7 +320,7 @@ export function Home() {
             >
               <p className="text-gray-300 mb-8 leading-relaxed">
                 I am a dedicated Electronic Systems Engineering Technology student at Texas A&M University with a passion for 
-                cybersecurity and full-stack development. Currently pursuing my BS degree with a 3.8 GPA, I combine academic 
+                cybersecurity and full-stack development. Currently pursuing my BS degree with a strong academic record, I combine academic 
                 excellence with hands-on experience in research, IT systems, and software development. As a National Cyber Scholar 
                 with Honors and GFACT certified professional, I specialize in creating secure, efficient solutions that bridge 
                 the gap between hardware and software systems.
@@ -341,8 +341,8 @@ export function Home() {
               className="grid grid-cols-1 sm:grid-cols-3 gap-6"
             >
               <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                <h3 className="text-3xl font-bold text-blue-400 mb-3">3.8</h3>
-                <h5 className="text-sm text-white/60 font-medium">GPA</h5>
+                <h3 className="text-3xl font-bold text-blue-400 mb-3">Academic Honors</h3>
+                <h5 className="text-sm text-white/60 font-medium">Recognition</h5>
               </div>
               <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
                 <h3 className="text-3xl font-bold text-blue-400 mb-3">GFACT</h3>

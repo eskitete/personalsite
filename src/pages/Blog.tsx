@@ -159,13 +159,17 @@ export function Blog() {
 
   useEffect(() => {
     if (!categorySlug) {
-      setSelectedCategory(null);
+      // If a post is open (slug present), preserve current category selection
+      // so closing the post returns to the selected category view.
+      if (!slug) {
+        setSelectedCategory(null);
+      }
       return;
     }
 
     const matchedCategory = fromCategorySlug(categorySlug, uniqueCategories);
     setSelectedCategory(matchedCategory ?? null);
-  }, [categorySlug, uniqueCategories]);
+  }, [categorySlug, uniqueCategories, slug]);
 
   const handleCategorySelect = (category: string | null) => {
     if (!category) {
