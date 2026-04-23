@@ -57,45 +57,80 @@ const workExperiences = [
 const projects = [
   {
     title: 'IRL Streaming Platform',
-    description: 'End-to-end IRL streaming ecosystem with an edge capture device, Go-based NAS backend, and multiple React web portals. Features role-based access control, fault-tolerant media segmentation, and auto-sync on connectivity restore.',
+    description: 'End-to-end IRL streaming ecosystem: edge capture device, Go-based NAS backend, and React web portals for creators and editors. Features RBAC, fault-tolerant media segmentation, and auto-sync on reconnect.',
     technologies: ['Go', 'React', 'SQLite', 'TypeScript', 'RBAC'],
     link: 'https://github.com/eskitete',
     github: 'https://github.com/eskitete'
   },
   {
     title: 'Hardware-Backed 2FA Security Key',
-    description: 'Custom 2FA security token firmware on the ESP8266 with USB-Serial interface. Uses an emulated Secure Element via Flash for Ed25519 keypairs and enforces policies against side-channel and brute-force attacks.',
-    technologies: ['C', 'ESP8266', 'Ed25519', 'Embedded Systems', 'Cryptography'],
+    description: 'Custom 2FA firmware on the ESP8266 (fido-lite) that signs cryptographic challenges via USB-Serial. Uses Flash as an emulated Secure Element to store Ed25519 keypairs with brute-force and side-channel mitigations.',
+    technologies: ['C++', 'ESP8266', 'Ed25519', 'Embedded', 'Cryptography'],
+    link: 'https://github.com/eskitete',
+    github: 'https://github.com/eskitete'
+  },
+  {
+    title: 'CAN-Bus Anomaly Detector',
+    description: 'Python-based tool for detecting anomalies in CAN bus traffic — the communication backbone of modern vehicles. Designed for automotive cybersecurity research and intrusion detection.',
+    technologies: ['Python', 'CAN Bus', 'Anomaly Detection', 'Cybersecurity'],
+    link: 'https://github.com/eskitete',
+    github: 'https://github.com/eskitete'
+  },
+  {
+    title: 'Adversary Emulation Pack',
+    description: 'PowerShell-based adversary emulation toolkit for red team exercises. Simulates real-world attack TTPs to test detection and response capabilities against active directory and Windows environments.',
+    technologies: ['PowerShell', 'Red Team', 'Active Directory', 'MITRE ATT&CK'],
+    link: 'https://github.com/eskitete',
+    github: 'https://github.com/eskitete'
+  },
+  {
+    title: 'AI Stock Predictor',
+    description: 'Machine learning pipeline for stock price prediction. Ingests historical market data, engineers features, and trains models to forecast near-term price movements.',
+    technologies: ['Python', 'Machine Learning', 'Finance', 'Data Science'],
+    link: 'https://github.com/eskitete',
+    github: 'https://github.com/eskitete'
+  },
+  {
+    title: 'Embedded Linux Bringup',
+    description: 'Low-level C project for bringing up an embedded Linux system from scratch — including bootloader configuration, device tree setup, and driver initialization.',
+    technologies: ['C', 'Linux', 'Embedded Systems', 'Device Trees'],
     link: 'https://github.com/eskitete',
     github: 'https://github.com/eskitete'
   },
   {
     title: 'Sports "Higher or Lower" Game',
-    description: 'NBA and NFL "Higher or Lower" web game built with TypeScript and React, featuring statistical player comparisons. Managed player data with Python-generated JSON files.',
-    technologies: ['TypeScript', 'React', 'Vite', 'Tailwind CSS', 'Python'],
+    description: 'NBA and NFL Higher or Lower web game built with React. Players guess which athlete leads in a stat. Python pipeline pre-fetches and normalizes player data into JSON.',
+    technologies: ['JavaScript', 'React', 'Python', 'Vite'],
     link: 'https://github.com/eskitete/HigherLower',
     github: 'https://github.com/eskitete/HigherLower'
   },
   {
-    title: 'STEM + C Research Platform',
-    description: 'Designed a custom block coding platform and created 3D-printed educational tools to improve STEM engagement among K-12 students, supporting curriculum development and learning assessment at Texas A&M.',
-    technologies: ['Block Coding', '3D Printing', 'Educational Technology'],
-    link: 'https://titil.tamu.edu/stemc-lessonplans/',
-    github: null
+    title: 'Robot Hand',
+    description: 'Python-controlled robotic hand using computer vision for gesture recognition and servo actuation. Maps hand pose landmarks to physical finger movements in real time.',
+    technologies: ['Python', 'OpenCV', 'Servo Control', 'Computer Vision'],
+    link: 'https://github.com/eskitete/robot_hand',
+    github: 'https://github.com/eskitete/robot_hand'
+  },
+  {
+    title: 'Robot Head (Eye/Jaw Control)',
+    description: 'Animatronic robot head that tracks faces in real time using OpenCV, driving servo-controlled eyes and jaw to follow the target and react to motion.',
+    technologies: ['Python', 'OpenCV', 'Raspberry Pi', 'Servo Control'],
+    link: 'https://github.com/eskitete/Robot-Head',
+    github: 'https://github.com/eskitete/Robot-Head'
   },
   {
     title: 'FTC Robot (2022–2023)',
-    description: 'FIRST Tech Challenge robot with full tele-op and autonomous programming. Implemented motion logic, sensor integration, and competition-ready control systems.',
+    description: 'FIRST Tech Challenge competition robot with full tele-op and autonomous modes. Implemented encoder-based motion, sensor fusion, and modular subsystem architecture.',
     technologies: ['Java', 'FTC SDK', 'Robotics', 'Autonomous Control'],
     link: 'https://github.com/eskitete/FTC-2022-2023',
     github: 'https://github.com/eskitete/FTC-2022-2023'
   },
   {
-    title: 'Robot Head (CV Eye/Jaw Control)',
-    description: 'Computer-vision controlled animatronic robot head with real-time eye and jaw movement driven by camera input using Python.',
-    technologies: ['Python', 'OpenCV', 'Computer Vision', 'Servo Control'],
-    link: 'https://github.com/eskitete/Robot-Head',
-    github: 'https://github.com/eskitete/Robot-Head'
+    title: 'STEM + C Research Platform',
+    description: 'Custom block coding platform and 3D-printed educational kits for improving STEM engagement among K-12 students at Texas A&M, supporting curriculum development and learning assessment.',
+    technologies: ['Block Coding', '3D Printing', 'Education', 'Research'],
+    link: 'https://titil.tamu.edu/stemc-lessonplans/',
+    github: null
   }
 ];
 
