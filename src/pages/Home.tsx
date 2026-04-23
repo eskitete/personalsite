@@ -1,27 +1,41 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { Shield, Terminal, Github, Download, MessageCircle, Mail, ExternalLink, FileText, X, Menu, Briefcase, Calendar, Building2 } from 'lucide-react';
+import { Shield, Terminal, Github, Download, Mail, ExternalLink, FileText, X, Menu, Briefcase, Calendar, Building2 } from 'lucide-react';
 import GradientPixelField from '../components/ui/gradient-dots';
 
 const skills = [
-  { name: 'JavaScript/TypeScript', level: 'Advanced' },
-  { name: 'Python', level: 'Advanced' },
-  { name: 'Java', level: 'Experienced' },
-  { name: 'C#', level: 'Experienced' },
-  { name: 'HTML/CSS', level: 'Advanced' },
-  { name: 'C/C++', level: 'Experienced' }
+  'JavaScript / TypeScript',
+  'Python',
+  'Go',
+  'C / C++',
+  'Java',
+  'C#',
+  'PowerShell',
+  'HTML / CSS',
+  'SQL',
 ];
 
 const technologies = [
-  { name: 'AWS (EC2, S3)', level: 'Experienced' },
-  { name: 'Azure', level: 'Experienced' },
-  { name: 'Docker', level: 'Experienced' },
-  { name: 'Git/GitHub', level: 'Advanced' },
-  { name: 'Linux', level: 'Advanced' },
-  { name: 'Wireshark', level: 'Advanced' },
-  { name: 'Ghidra', level: 'Experienced' },
-  { name: 'SQL/DynamoDB', level: 'Advanced' }
+  'React',
+  'Vite',
+  'Tailwind CSS',
+  'Framer Motion',
+  'Node.js',
+  'AWS (EC2, S3)',
+  'Azure / Azure AD',
+  'Docker',
+  'Git',
+  'Linux',
+  'Wireshark',
+  'Ghidra',
+  'SQLite / DynamoDB',
+  'OpenCV',
+  'XGBoost / scikit-learn',
+  'MediaPipe',
+  'Arduino / Raspberry Pi',
+  'ESP8266',
+  'Autodesk Inventor',
 ];
 
 const workExperiences = [
@@ -310,7 +324,7 @@ export function Home() {
                     href="#contact"
                     className="inline-flex items-center px-6 py-3 bg-blue-500/10 hover:bg-blue-500/20 backdrop-blur-sm rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
                   >
-                    <MessageCircle className="w-4 h-4 mr-2" />
+                    <Mail className="w-4 h-4 mr-2" />
                     Let's Talk
                   </a>
                 </div>
@@ -368,27 +382,31 @@ export function Home() {
             <h2 className="text-2xl font-medium text-[#A68F97] mb-12">About Me</h2>
           </motion.div>
 
-          <div className="max-w-4xl mx-auto flex flex-col items-center">
+          <div className="max-w-3xl mx-auto flex flex-col items-center">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="text-center"
+              className="text-center space-y-5"
             >
-              <p className="text-gray-300 mb-8 leading-relaxed text-lg">
-                I am a dedicated Electronic Systems Engineering Technology student at Texas A&M University with a passion for 
-                cybersecurity and full-stack development. Currently pursuing my BS degree with a 3.8 GPA, I combine academic 
-                excellence with hands-on experience in research, IT systems, and software development. As a National Cyber Scholar 
-                with Honors and GFACT certified professional, I specialize in creating secure, efficient solutions that bridge 
-                the gap between hardware and software systems.
+              <p className="text-gray-300 leading-relaxed text-lg">
+                Hey, I'm Rafay — a student at Texas A&M studying Electronic Systems Engineering Technology, with a focus on cybersecurity and systems-level software. I'm most at home when a problem requires understanding both what's happening at the hardware level and how to build something useful on top of it.
               </p>
-              <a 
-                href="#contact" 
-                className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
-              >
-                Let's Talk
-              </a>
+              <p className="text-gray-300 leading-relaxed text-lg">
+                Outside the keyboard I've done research on K-12 STEM education, kept school networks running as an IT intern, and competed in FIRST Tech Challenge robotics. I hold a GFACT certification from GIAC and was named a National Cyber Scholar with Honors in 2023.
+              </p>
+              <p className="text-gray-300 leading-relaxed text-lg">
+                I like problems that are annoyingly hard to scope and satisfying to solve — build something real, break it, make it better.
+              </p>
+              <div className="pt-4">
+                <a
+                  href="#contact"
+                  className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
+                >
+                  Let's Talk
+                </a>
+              </div>
             </motion.div>
           </div>
         </div>
@@ -416,11 +434,10 @@ export function Home() {
               transition={{ duration: 0.6 }}
             >
               <h3 className="text-xl font-medium text-[#A68F97] mb-6 text-center">Languages</h3>
-              <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex flex-wrap justify-center gap-3">
                 {skills.map((skill, index) => (
-                  <div key={index} className="flex items-center gap-3 px-6 py-4 bg-gray-800/50 rounded-full hover:bg-gray-800/80 hover:-translate-y-1 transition-all duration-300 border border-white/5 shadow-lg">
-                    <h4 className="text-white font-medium whitespace-nowrap">{skill.name}</h4>
-                    <span className="text-xs text-blue-400 font-medium bg-blue-500/10 px-2.5 py-1 rounded-full whitespace-nowrap">{skill.level}</span>
+                  <div key={index} className="px-5 py-2.5 bg-gray-800/50 rounded-full hover:bg-gray-800/80 hover:-translate-y-1 transition-all duration-300 border border-white/5 shadow-lg">
+                    <span className="text-white font-medium whitespace-nowrap text-sm">{skill}</span>
                   </div>
                 ))}
               </div>
@@ -432,14 +449,56 @@ export function Home() {
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h3 className="text-xl font-medium text-[#A68F97] mb-6 text-center">Technologies and Tools</h3>
-              <div className="flex flex-wrap justify-center gap-4">
+              <h3 className="text-xl font-medium text-[#A68F97] mb-6 text-center">Technologies & Tools</h3>
+              <div className="flex flex-wrap justify-center gap-3">
                 {technologies.map((tech, index) => (
-                  <div key={index} className="flex items-center gap-3 px-6 py-4 bg-gray-800/50 rounded-full hover:bg-gray-800/80 hover:-translate-y-1 transition-all duration-300 border border-white/5 shadow-lg">
-                    <h4 className="text-white font-medium whitespace-nowrap">{tech.name}</h4>
-                    <span className="text-xs text-blue-400 font-medium bg-blue-500/10 px-2.5 py-1 rounded-full whitespace-nowrap">{tech.level}</span>
+                  <div key={index} className="px-5 py-2.5 bg-gray-800/50 rounded-full hover:bg-gray-800/80 hover:-translate-y-1 transition-all duration-300 border border-white/5 shadow-lg">
+                    <span className="text-white font-medium whitespace-nowrap text-sm">{tech}</span>
                   </div>
                 ))}
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.35 }}
+            >
+              <h3 className="text-xl font-medium text-[#A68F97] mb-8 text-center">Education</h3>
+              <div className="relative pl-8 md:pl-0">
+                <div className="md:grid md:grid-cols-12 gap-8">
+                  {/* Mobile timeline */}
+                  <div className="absolute left-0 top-0 h-full w-px bg-white/10 md:hidden"></div>
+                  <div className="absolute left-[-4px] top-2 w-2 h-2 rounded-full bg-blue-400 md:hidden"></div>
+
+                  {/* Left: Date & Institution */}
+                  <div className="md:col-span-3 mb-4 md:mb-0 md:text-right">
+                    <div className="flex items-center md:justify-end gap-2 text-blue-400 font-medium mb-1">
+                      <Calendar className="w-4 h-4 shrink-0" />
+                      <span>Aug 2023 – May 2027</span>
+                    </div>
+                    <div className="flex items-center md:justify-end gap-2 text-gray-400 text-sm">
+                      <Building2 className="w-4 h-4 shrink-0" />
+                      <span>Texas A&amp;M University</span>
+                    </div>
+                  </div>
+
+                  {/* Center: Timeline dot */}
+                  <div className="hidden md:flex flex-col items-center col-span-1">
+                    <div className="w-4 h-4 rounded-full bg-blue-500/20 border-2 border-blue-400 z-10 mt-1 shrink-0"></div>
+                    <div className="w-px h-full bg-white/10 -mt-2"></div>
+                  </div>
+
+                  {/* Right: Degree & certs */}
+                  <div className="md:col-span-8 pb-8">
+                    <h4 className="text-xl font-medium text-white mb-1 flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-blue-400 shrink-0" />
+                      BS — Electronic Systems Engineering Technology
+                    </h4>
+                    <p className="text-gray-400 text-sm mb-4">Minor in Cybersecurity</p>
+                  </div>
+                </div>
               </div>
             </motion.div>
 
@@ -595,7 +654,7 @@ export function Home() {
             <h2 className="text-2xl font-medium text-[#A68F97] mb-12">Contact Me</h2>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid sm:grid-cols-3 gap-8 max-w-3xl mx-auto">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -616,25 +675,7 @@ export function Home() {
               </a>
             </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.1 }}
-              className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-all duration-300 hover:scale-105"
-            >
-              <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                <MessageCircle className="w-8 h-8 text-blue-400" />
-              </div>
-              <h4 className="text-white font-medium text-lg mb-2">Messenger</h4>
-              <h5 className="text-sm text-white/60 mb-4">Rafay Syed</h5>
-              <a 
-                href="#" 
-                className="inline-block text-blue-400 hover:text-blue-300 transition-colors font-medium"
-              >
-                Send a message
-              </a>
-            </motion.div>
+
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}

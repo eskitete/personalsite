@@ -31,6 +31,7 @@ export default function GradientPixelField({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cursorRef = useRef({ x: -9999, y: -9999 });
+  const lastScrollYRef = useRef(typeof window !== 'undefined' ? window.scrollY : 0);
   const rafRef = useRef<number | null>(null);
   const resizeObsRef = useRef<ResizeObserver | null>(null);
   const canvasSizeRef = useRef({ width: 0, height: 0 });
@@ -254,6 +255,17 @@ export default function GradientPixelField({
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("pointerleave", onPointerLeave, { passive: true });
 
+    const onScroll = () => {
+      const currentScrollY = window.scrollY;
+      const delta = currentScrollY - lastScrollYRef.current;
+      lastScrollYRef.current = currentScrollY;
+      // If cursor is on screen, shift its canvas-relative Y by the scroll delta
+      if (cursorRef.current.x > -9000) {
+        cursorRef.current.y += delta;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+
     return () => {
       running = false;
       if (rafRef.current) {
@@ -262,6 +274,7 @@ export default function GradientPixelField({
       }
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("scroll", onScroll);
       resizeObsRef.current?.disconnect();
       if ("removeEventListener" in reduceMotionQuery) {
         reduceMotionQuery.removeEventListener("change", handleReduceMotionChange);
