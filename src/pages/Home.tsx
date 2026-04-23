@@ -70,6 +70,20 @@ const projects = [
     github: 'https://github.com/eskitete'
   },
   {
+    title: 'Sports "Higher or Lower" Game',
+    description: 'NBA and NFL Higher or Lower web game built with React. Players guess which athlete leads in a stat. Python pipeline pre-fetches and normalizes player data into JSON.',
+    technologies: ['JavaScript', 'React', 'Python', 'Vite'],
+    link: 'https://github.com/eskitete/HigherLower',
+    github: 'https://github.com/eskitete/HigherLower'
+  },
+  {
+    title: 'STEM + C Research Platform',
+    description: 'Custom block coding platform and 3D-printed educational kits for improving STEM engagement among K-12 students at Texas A&M, supporting curriculum development and learning assessment.',
+    technologies: ['Block Coding', '3D Printing', 'Education', 'Research'],
+    link: 'https://titil.tamu.edu/stemc-lessonplans/',
+    github: null
+  },
+  {
     title: 'CAN-Bus Anomaly Detector',
     description: 'Python-based tool for detecting anomalies in CAN bus traffic — the communication backbone of modern vehicles. Designed for automotive cybersecurity research and intrusion detection.',
     technologies: ['Python', 'CAN Bus', 'Anomaly Detection', 'Cybersecurity'],
@@ -96,13 +110,6 @@ const projects = [
     technologies: ['C', 'Linux', 'Embedded Systems', 'Device Trees'],
     link: 'https://github.com/eskitete',
     github: 'https://github.com/eskitete'
-  },
-  {
-    title: 'Sports "Higher or Lower" Game',
-    description: 'NBA and NFL Higher or Lower web game built with React. Players guess which athlete leads in a stat. Python pipeline pre-fetches and normalizes player data into JSON.',
-    technologies: ['JavaScript', 'React', 'Python', 'Vite'],
-    link: 'https://github.com/eskitete/HigherLower',
-    github: 'https://github.com/eskitete/HigherLower'
   },
   {
     title: 'Robot Hand',
