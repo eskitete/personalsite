@@ -40,4 +40,4 @@ void sign_challenge(const uint8_t *challenge, size_t len, uint8_t *sig_out) {
 
 ## GitHub
 
-[View on GitHub →](https://github.com/eskitete)
+[View on GitHub →](https://github.com/eskitete/fido-lite-esp8266)

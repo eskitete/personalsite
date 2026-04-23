@@ -30,4 +30,4 @@ Understanding the full boot chain is essential for embedded security work — kn
 
 ## GitHub
 
-[View on GitHub →](https://github.com/eskitete)
+[View on GitHub →](https://github.com/eskitete/embedded-linux-bringup)

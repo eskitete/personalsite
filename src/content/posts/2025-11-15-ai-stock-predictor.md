@@ -31,4 +31,4 @@ A machine learning pipeline that ingests historical stock market data, engineers
 
 ## GitHub
 
-[View on GitHub →](https://github.com/eskitete)
+[View on GitHub →](https://github.com/eskitete/ai-stock-predictor)

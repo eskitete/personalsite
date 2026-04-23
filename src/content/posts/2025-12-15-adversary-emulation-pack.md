@@ -29,4 +29,4 @@ Each module maps to a specific ATT&CK technique ID so blue teams can correlate e
 
 ## GitHub
 
-[View on GitHub →](https://github.com/eskitete)
+[View on GitHub →](https://github.com/eskitete/Adversary-Emulation-Pack)

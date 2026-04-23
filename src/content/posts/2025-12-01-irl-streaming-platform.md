@@ -47,4 +47,4 @@ func backfillSegments(db *sql.DB, uploader Uploader) error {
 
 ## GitHub
 
-[View on GitHub →](https://github.com/eskitete)
+[View on GitHub →](https://github.com/eskitete/vidproject)
