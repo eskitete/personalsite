@@ -1,10 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { Shield, Code, Terminal, Github, Download, MessageCircle, Mail, ExternalLink, FileText, X, ChevronLeft, ChevronRight, BookOpen, Menu } from 'lucide-react';
-import GradientPixelField from '../components/ui/gradient-dots';
 import { Link } from 'react-router-dom';
-import { getRecentPosts } from '../lib/postStore';
-import type { Post } from '../utils/posts';
+import { Shield, Terminal, Github, Download, MessageCircle, Mail, ExternalLink, FileText, X, Menu, Briefcase, Calendar, Building2 } from 'lucide-react';
+import GradientPixelField from '../components/ui/gradient-dots';
 
 const skills = [
   { name: 'JavaScript/TypeScript', level: 'Advanced' },
@@ -26,45 +24,78 @@ const technologies = [
   { name: 'SQL/DynamoDB', level: 'Advanced' }
 ];
 
-const services = [
+const workExperiences = [
   {
-    title: 'Full-Stack Development',
-    description: 'Custom web applications using JavaScript, TypeScript, React, and modern development frameworks'
+    title: 'STEM + C Research Assistant',
+    company: 'Texas A&M University',
+    date: 'Sep 2024 - Sep 2025',
+    bullets: [
+      'Researched the role of block coding and 3D printing in improving STEM engagement among K-12 students, supporting curriculum development and learning assessment.',
+      'Helped design a custom block coding platform and created 3D-printed educational tools, contributing to both classroom instruction and research data collection.'
+    ]
   },
   {
-    title: 'Cloud Solutions',
-    description: 'AWS and Azure cloud infrastructure setup, deployment, and management for scalable applications'
+    title: 'Information Technology Intern',
+    company: 'Harmony School of Excellence',
+    date: 'Jun 2021 - Aug 2022',
+    bullets: [
+      'Implemented and configured Windows systems for faculty and students, linking them to Azure Active Directory for streamlined device and user management.',
+      'Provided comprehensive technical support services, including repairs of computers and electronic appliances.',
+      'Maintained LAN infrastructure through cabling, switch configuration, and network troubleshooting, improving uptime and ensuring a stable school-wide connection.'
+    ]
   },
   {
-    title: 'Cybersecurity Consulting',
-    description: 'Security assessments, vulnerability analysis, and implementation of secure development practices'
+    title: 'Manager',
+    company: 'Houston Parks and Recreation',
+    date: 'Jun 2022 - Aug 2022',
+    bullets: [
+      'Successfully directed the operations of the Freed Community Center, overseeing daily activities and ensuring the smooth running of the facility.'
+    ]
   }
 ];
 
 const projects = [
   {
-    title: 'Sports Higher or Lower Game',
-    description: 'NBA and NFL "Higher or Lower" web game built with TypeScript and React, featuring statistical player comparisons and optimized performance.',
+    title: 'IRL Streaming Platform',
+    description: 'End-to-end IRL streaming ecosystem with an edge capture device, Go-based NAS backend, and multiple React web portals. Features role-based access control, fault-tolerant media segmentation, and auto-sync on connectivity restore.',
+    technologies: ['Go', 'React', 'SQLite', 'TypeScript', 'RBAC'],
+    link: 'https://github.com/eskitete',
+    github: 'https://github.com/eskitete'
+  },
+  {
+    title: 'Hardware-Backed 2FA Security Key',
+    description: 'Custom 2FA security token firmware on the ESP8266 with USB-Serial interface. Uses an emulated Secure Element via Flash for Ed25519 keypairs and enforces policies against side-channel and brute-force attacks.',
+    technologies: ['C', 'ESP8266', 'Ed25519', 'Embedded Systems', 'Cryptography'],
+    link: 'https://github.com/eskitete',
+    github: 'https://github.com/eskitete'
+  },
+  {
+    title: 'Sports "Higher or Lower" Game',
+    description: 'NBA and NFL "Higher or Lower" web game built with TypeScript and React, featuring statistical player comparisons. Managed player data with Python-generated JSON files.',
     technologies: ['TypeScript', 'React', 'Vite', 'Tailwind CSS', 'Python'],
-    link: 'https://github.com/eskitete'
+    link: 'https://github.com/eskitete/HigherLower',
+    github: 'https://github.com/eskitete/HigherLower'
   },
   {
-    title: 'AI-Powered Chatbot & Website Development',
-    description: 'Built AI chatbots using n8n and make.com for local service businesses, with custom website integration and CRM handoff capabilities.',
-    technologies: ['n8n', 'make.com', 'JavaScript', 'SQL', 'Google Drive API'],
-    link: 'https://github.com/eskitete'
-  },
-  {
-    title: 'STEM Research Platform',
-    description: 'Custom block coding platform and 3D-printed educational tools for improving STEM engagement among K-12 students.',
+    title: 'STEM + C Research Platform',
+    description: 'Designed a custom block coding platform and created 3D-printed educational tools to improve STEM engagement among K-12 students, supporting curriculum development and learning assessment at Texas A&M.',
     technologies: ['Block Coding', '3D Printing', 'Educational Technology'],
-    link: 'https://github.com/eskitete'
+    link: 'https://titil.tamu.edu/stemc-lessonplans/',
+    github: null
   },
   {
-    title: 'IT Infrastructure Management',
-    description: 'Implemented Windows systems configuration and Azure Active Directory integration for educational institutions.',
-    technologies: ['Windows Systems', 'Azure AD', 'Network Infrastructure', 'LAN Management'],
-    link: 'https://github.com/eskitete'
+    title: 'FTC Robot (2022–2023)',
+    description: 'FIRST Tech Challenge robot with full tele-op and autonomous programming. Implemented motion logic, sensor integration, and competition-ready control systems.',
+    technologies: ['Java', 'FTC SDK', 'Robotics', 'Autonomous Control'],
+    link: 'https://github.com/eskitete/FTC-2022-2023',
+    github: 'https://github.com/eskitete/FTC-2022-2023'
+  },
+  {
+    title: 'Robot Head (CV Eye/Jaw Control)',
+    description: 'Computer-vision controlled animatronic robot head with real-time eye and jaw movement driven by camera input using Python.',
+    technologies: ['Python', 'OpenCV', 'Computer Vision', 'Servo Control'],
+    link: 'https://github.com/eskitete/Robot-Head',
+    github: 'https://github.com/eskitete/Robot-Head'
   }
 ];
 
@@ -72,19 +103,15 @@ const navLinks = [
   { label: 'Home', href: '#home' },
   { label: 'About', href: '#about' },
   { label: 'Experience', href: '#experience' },
-  { label: 'Services', href: '#services' },
   { label: 'Projects', href: '#projects' },
-  { label: 'Blog', href: '#blog' },
   { label: 'Contact', href: '#contact' }
 ];
 
 export function Home() {
   const [isResumeViewerOpen, setIsResumeViewerOpen] = useState(false);
-  const [currentBlogIndex, setCurrentBlogIndex] = useState(0);
   const prefersReducedMotion = useReducedMotion();
   const [allowAnimatedBackground, setAllowAnimatedBackground] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const blogPosts = useMemo<Post[]>(() => getRecentPosts(6), []);
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -126,17 +153,6 @@ export function Home() {
       document.body.style.overflow = '';
     };
   }, [mobileNavOpen]);
-
-  // Carousel navigation functions
-  const nextBlogPost = () => {
-    if (blogPosts.length === 0) return;
-    setCurrentBlogIndex((prev) => (prev + 1) % blogPosts.length);
-  };
-
-  const prevBlogPost = () => {
-    if (blogPosts.length === 0) return;
-    setCurrentBlogIndex((prev) => (prev - 1 + blogPosts.length) % blogPosts.length);
-  };
 
   return (
     <div className="min-h-screen text-white font-['Ubuntu'] relative">
@@ -310,15 +326,15 @@ export function Home() {
             <h2 className="text-2xl font-medium text-[#A68F97] mb-12">About Me</h2>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-4xl mx-auto flex flex-col items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="text-center lg:text-left"
+              className="text-center"
             >
-              <p className="text-gray-300 mb-8 leading-relaxed">
+              <p className="text-gray-300 mb-8 leading-relaxed text-lg">
                 I am a dedicated Electronic Systems Engineering Technology student at Texas A&M University with a passion for 
                 cybersecurity and full-stack development. Currently pursuing my BS degree with a 3.8 GPA, I combine academic 
                 excellence with hands-on experience in research, IT systems, and software development. As a National Cyber Scholar 
@@ -331,27 +347,6 @@ export function Home() {
               >
                 Let's Talk
               </a>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="grid grid-cols-1 sm:grid-cols-3 gap-6"
-            >
-              <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                <h3 className="text-3xl font-bold text-blue-400 mb-3">3.8</h3>
-                <h5 className="text-sm text-white/60 font-medium">GPA</h5>
-              </div>
-              <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                <h3 className="text-3xl font-bold text-blue-400 mb-3">GFACT</h3>
-                <h5 className="text-sm text-white/60 font-medium">Certified</h5>
-              </div>
-              <div className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                <h3 className="text-3xl font-bold text-blue-400 mb-3">4+</h3>
-                <h5 className="text-sm text-white/60 font-medium">Projects</h5>
-              </div>
             </motion.div>
           </div>
         </div>
@@ -371,75 +366,95 @@ export function Home() {
             <h2 className="text-2xl font-medium text-[#A68F97] mb-12">Experience & Expertise</h2>
           </motion.div>
 
-          <div className="grid lg:grid-cols-2 gap-12">
+          <div className="flex flex-col gap-12 max-w-5xl mx-auto">
             <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
             >
-              <h3 className="text-lg font-medium text-[#A68F97] mb-6">Language</h3>
-              <div className="space-y-4">
+              <h3 className="text-xl font-medium text-[#A68F97] mb-6 text-center">Languages</h3>
+              <div className="flex flex-wrap justify-center gap-4">
                 {skills.map((skill, index) => (
-                  <div key={index} className="flex items-center justify-between p-6 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                    <h4 className="text-white font-medium text-lg">{skill.name}</h4>
-                    <span className="text-sm text-blue-400 font-medium bg-blue-500/10 px-3 py-1 rounded-full">{skill.level}</span>
+                  <div key={index} className="flex items-center gap-3 px-6 py-4 bg-gray-800/50 rounded-full hover:bg-gray-800/80 hover:-translate-y-1 transition-all duration-300 border border-white/5 shadow-lg">
+                    <h4 className="text-white font-medium whitespace-nowrap">{skill.name}</h4>
+                    <span className="text-xs text-blue-400 font-medium bg-blue-500/10 px-2.5 py-1 rounded-full whitespace-nowrap">{skill.level}</span>
                   </div>
                 ))}
               </div>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <h3 className="text-lg font-medium text-[#A68F97] mb-6">Technology and Tool</h3>
-              <div className="space-y-4">
+              <h3 className="text-xl font-medium text-[#A68F97] mb-6 text-center">Technologies and Tools</h3>
+              <div className="flex flex-wrap justify-center gap-4">
                 {technologies.map((tech, index) => (
-                  <div key={index} className="flex items-center justify-between p-6 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-colors">
-                    <h4 className="text-white font-medium text-lg">{tech.name}</h4>
-                    <span className="text-sm text-blue-400 font-medium bg-blue-500/10 px-3 py-1 rounded-full">{tech.level}</span>
+                  <div key={index} className="flex items-center gap-3 px-6 py-4 bg-gray-800/50 rounded-full hover:bg-gray-800/80 hover:-translate-y-1 transition-all duration-300 border border-white/5 shadow-lg">
+                    <h4 className="text-white font-medium whitespace-nowrap">{tech.name}</h4>
+                    <span className="text-xs text-blue-400 font-medium bg-blue-500/10 px-2.5 py-1 rounded-full whitespace-nowrap">{tech.level}</span>
                   </div>
                 ))}
               </div>
             </motion.div>
-          </div>
-        </div>
-      </section>
 
-      {/* Services Section */}
-      <section id="services" className="py-16 px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h5 className="text-sm font-medium text-white/60 mb-4">What I Offer</h5>
-            <h2 className="text-2xl font-medium text-[#A68F97] mb-12">My Services</h2>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {services.map((service, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                className="text-center p-8 bg-gray-800/50 rounded-xl hover:bg-gray-800/70 transition-all duration-300 hover:scale-105"
-              >
-                <div className="w-16 h-16 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-                  <Code className="w-8 h-8 text-blue-400" />
-                </div>
-                <h3 className="text-xl font-medium text-white mb-4">{service.title}</h3>
-                <p className="text-gray-300 leading-relaxed">{service.description}</p>
-              </motion.div>
-            ))}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.4 }}
+              className="mt-8"
+            >
+              <h3 className="text-xl font-medium text-[#A68F97] mb-8 text-center">Work Experience</h3>
+              <div className="space-y-8">
+                {workExperiences.map((exp, index) => (
+                  <div key={index} className="relative pl-8 md:pl-0">
+                    <div className="md:grid md:grid-cols-12 gap-8">
+                      {/* Timeline dot and line for mobile */}
+                      <div className="absolute left-0 top-0 h-full w-px bg-white/10 md:hidden"></div>
+                      <div className="absolute left-[-4px] top-2 w-2 h-2 rounded-full bg-blue-400 md:hidden"></div>
+                      
+                      {/* Left Column: Date & Company (Desktop) */}
+                      <div className="md:col-span-3 mb-4 md:mb-0 md:text-right">
+                        <div className="flex items-center md:justify-end gap-2 text-blue-400 font-medium mb-1">
+                          <Calendar className="w-4 h-4 shrink-0" />
+                          <span>{exp.date}</span>
+                        </div>
+                        <div className="flex items-center md:justify-end gap-2 text-gray-400 text-sm">
+                          <Building2 className="w-4 h-4 shrink-0" />
+                          <span>{exp.company}</span>
+                        </div>
+                      </div>
+                      
+                      {/* Center Column: Timeline connecting visual (Desktop) */}
+                      <div className="hidden md:flex flex-col items-center col-span-1">
+                        <div className="w-4 h-4 rounded-full bg-blue-500/20 border-2 border-blue-400 z-10 mt-1 shrink-0"></div>
+                        <div className="w-px h-full bg-white/10 -mt-2"></div>
+                      </div>
+                      
+                      {/* Right Column: Title & Bullets */}
+                      <div className="md:col-span-8 pb-8">
+                        <h4 className="text-xl font-medium text-white mb-4 flex items-center gap-2">
+                          <Briefcase className="w-5 h-5 text-blue-400 shrink-0" />
+                          {exp.title}
+                        </h4>
+                        <ul className="space-y-3">
+                          {exp.bullets.map((bullet, bIndex) => (
+                            <li key={bIndex} className="text-gray-300 text-sm leading-relaxed flex items-start">
+                              <span className="text-blue-400 mr-2 mt-1.5 shrink-0">•</span>
+                              <span>{bullet}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
@@ -459,7 +474,7 @@ export function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {projects.map((project, index) => (
+            {projects.slice(0, 4).map((project, index) => (
               <motion.div
                 key={index}
                 initial={{ opacity: 0, y: 20 }}
@@ -480,13 +495,28 @@ export function Home() {
                     </span>
                   ))}
                 </div>
-                <a 
-                  href={project.link} 
-                  className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors font-medium"
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  View Project
-                </a>
+                <div className="flex items-center gap-4">
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 text-gray-300 hover:text-white transition-colors font-medium text-sm"
+                    >
+                      <Github className="w-4 h-4" />
+                      GitHub
+                    </a>
+                  )}
+                  <a
+                    href={project.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors font-medium text-sm"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                    {project.github ? 'View Live' : 'Learn More'}
+                  </a>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -499,7 +529,7 @@ export function Home() {
             className="mt-10 flex justify-center"
           >
             <Link
-              to="/blog/category/projects"
+              to="/projects"
               className="inline-flex items-center px-6 py-3 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 backdrop-blur-sm text-sm font-medium text-blue-200 transition-all duration-300 hover:scale-105"
             >
               View All Projects
@@ -508,114 +538,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* Blog Section */}
-      <section id="blog" className="py-16 px-6">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h5 className="text-sm font-medium text-white/60 mb-4">Latest Articles</h5>
-            <h2 className="text-2xl font-medium text-[#A68F97] mb-12">Blog Posts</h2>
-          </motion.div>
-
-          {blogPosts.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
-            >
-              {/* Carousel Container */}
-              <div className="relative overflow-hidden rounded-xl bg-gray-800/50 backdrop-blur-sm">
-                <div className="flex transition-transform duration-500 ease-in-out" 
-                     style={{ transform: `translateX(-${currentBlogIndex * 100}%)` }}>
-                  {blogPosts.map((post, index) => (
-                    <div key={post.slug} className="w-full flex-shrink-0 p-8">
-                      <div className="grid md:grid-cols-2 gap-8 items-center">
-                        {/* Blog Post Content */}
-                        <div>
-                          <div className="mb-4">
-                            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-500/20 text-blue-400">
-                              {post.category}
-                            </span>
-                          </div>
-                          <h3 className="text-2xl font-medium text-white mb-4">{post.title}</h3>
-                          <p className="text-gray-300 mb-6 leading-relaxed">{post.excerpt}</p>
-                          <div className="flex items-center justify-between text-sm text-gray-400 mb-6">
-                            <span>{post.date}</span>
-                            <span>{post.duration} read</span>
-                          </div>
-                            <div className="flex gap-4">
-                            <Link 
-                              to={`/blog/${post.slug}`} 
-                              className="inline-flex items-center px-6 py-3 bg-blue-500 text-white rounded-lg text-sm font-medium transition-all duration-300 hover:bg-blue-600 hover:scale-105"
-                            >
-                              <BookOpen className="w-4 h-4 mr-2" />
-                              Read More
-                            </Link>
-                            {/* removed per-slide "View All Posts" */}
-                          </div>
-                        </div>
-                        
-                        {/* Blog Post Visual */}
-                        <div className="flex justify-center">
-                          <div className="w-64 h-64 bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-xl flex items-center justify-center">
-                            <BookOpen className="w-16 h-16 text-blue-400" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                 </div>
-
-                {/* Navigation Arrows */}
-                <button
-                  onClick={prevBlogPost}
-                  className="absolute left-4 top-1/2 transform -translate-y-1/2 p-3 bg-gray-800/80 hover:bg-gray-800 rounded-full transition-colors"
-                >
-                  <ChevronLeft className="w-6 h-6 text-white" />
-                </button>
-                <button
-                  onClick={nextBlogPost}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 p-3 bg-gray-800/80 hover:bg-gray-800 rounded-full transition-colors"
-                >
-                  <ChevronRight className="w-6 h-6 text-white" />
-                </button>
-
-                {/* Dots Indicator */}
-                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                  {blogPosts.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentBlogIndex(index)}
-                      className={`w-2 h-2 rounded-full transition-colors ${
-                        index === currentBlogIndex ? 'bg-blue-500' : 'bg-gray-600'
-                      }`}
-                    />
-                  ))}
-                </div>
-              </div>
-
-              {/* View All Posts (moved below carousel) */}
-              <div className="mt-6 flex justify-center">
-                <Link 
-                  to="/blog" 
-                  className="inline-flex items-center px-6 py-3 bg-blue-500/10 hover:bg-blue-500/20 backdrop-blur-sm rounded-lg text-sm font-medium transition-all duration-300 hover:scale-105"
-                >
-                  View All Posts
-                </Link>
-              </div>
-            </motion.div>
-          )}
-        
-        </div>
-        
-      </section>
 
       {/* Contact Section */}
       <section id="contact" className="py-16 px-6">
@@ -724,9 +646,7 @@ export function Home() {
               <a href="#home" className="text-gray-400 hover:text-white transition-colors">Home</a>
               <a href="#about" className="text-gray-400 hover:text-white transition-colors">About</a>
               <a href="#experience" className="text-gray-400 hover:text-white transition-colors">Experience</a>
-              <a href="#services" className="text-gray-400 hover:text-white transition-colors">Services</a>
               <a href="#portfolio" className="text-gray-400 hover:text-white transition-colors">Portfolio</a>
-              <a href="#blog" className="text-gray-400 hover:text-white transition-colors">Blog</a>
               <a href="#contact" className="text-gray-400 hover:text-white transition-colors">Contact</a>
             </div>
             <p className="text-sm text-gray-400">

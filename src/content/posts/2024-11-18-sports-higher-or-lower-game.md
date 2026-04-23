@@ -6,21 +6,22 @@ tags:
   - "TypeScript"
   - "React"
   - "Tailwind CSS"
-  - "Sports Analytics"
+  - "Python"
 author: "Rafay Syed"
 duration: "6 min"
+slug: "sports-higher-or-lower-game"
 ---
 
 ## Overview
 
-I wanted a playful way to explore sports statistics, so I built an interactive **Higher or Lower** experience that compares NBA and NFL players. The app consumes pre-processed stat packages, then challenges users to decide which athlete leads in a particular metric. A correct guess advances the game while the scoreboard tallies streaks and high scores.
+I built an interactive **Higher or Lower** web game that lets users compare NBA and NFL players across key statistics. The goal was to create a fun, fast-loading interface backed by clean data pipelines.
 
 ## What I Built
 
-- Real-time comparisons powered by a TypeScript/React stack  
-- Smooth animations and responsive UI with Tailwind CSS  
-- Aggressive memoization to keep the interface snappy even when datasets grow large  
-- A data pipeline that pre-fetches and normalizes stats so the frontend never waits on slow API calls
+- Real-time player comparisons powered by a **TypeScript/React** stack
+- Smooth animations and responsive layout with **Tailwind CSS**
+- Aggressive memoization to keep the interface snappy even with large datasets
+- A **Python data pipeline** that pre-fetches, normalizes, and serializes player stats into JSON — so the frontend never waits on slow API calls
 
 ```tsx
 const revealAnswer = (choice: 'left' | 'right') => {
@@ -33,6 +34,10 @@ const revealAnswer = (choice: 'left' | 'right') => {
 };
 ```
 
+## GitHub
+
+[View on GitHub →](https://github.com/eskitete/HigherLower)
+
 ## Outcome
 
-The project sharpened my performance profiling skills and gave me a platform to experiment with data visualization patterns. It now serves as a demo for potential clients who want to see how quickly I can translate a game concept into a polished, production-ready experience.
+The project sharpened my performance profiling skills and gave me a platform to experiment with data visualization patterns. Bundled with Vite for near-instant load times.

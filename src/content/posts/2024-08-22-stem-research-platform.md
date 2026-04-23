@@ -1,38 +1,33 @@
 ---
-title: "STEM Research & Learning Platform"
+title: "STEM + C Research Platform"
 date: "Aug 22, 2024"
 category: "Projects"
 tags:
   - "Education"
-  - "Hardware"
   - "3D Printing"
   - "Block Coding"
+  - "Research"
 author: "Rafay Syed"
-duration: "8 min"
+duration: "5 min"
+slug: "stem-c-research-platform"
 ---
 
-## Bringing STEM to Life
+## Overview
 
-K–12 educators needed a customizable environment where students could prototype ideas quickly. I delivered a hybrid platform that mixes hardware, software, and lesson plans to make STEM approachable for every learning style.
+As a Research Assistant in the STEM + C program at Texas A&M University, I contributed to a research initiative studying how block-based coding and 3D printing can improve STEM engagement among K–12 students.
 
-## Platform Components
+## What I Built
 
-- **Block-based coding editor** with scaffolding for microcontrollers and robotics  
-- **3D-printed kits** that snap together, removing the intimidation factor for first-time builders  
-- Real-time classroom dashboards so teachers can monitor progress and surface teachable moments  
-- Extensive documentation and tutorial videos to empower educators without a technical background
+- Helped design a **custom block coding platform** tailored to K–12 classroom instruction, allowing students with no prior programming experience to control hardware and visualize logic.
+- Created **3D-printed educational kits** — physical lesson artifacts that complement digital exercises and lower the barrier to hands-on experimentation.
+- Contributed to **research data collection and learning assessments**, supporting the broader curriculum development effort.
 
-### Architecture Snapshot
+## Research Context
 
-```mermaid
-flowchart LR
-  UI[Block Coding UI] --> API[(Hasura GraphQL API)]
-  API --> DB[(Postgres)]
-  API --> Realtime{Subscriptions}
-  UI --> Devices[(Microcontroller Bridge)]
-  Devices --> Students[(Lesson Kits)]
-```
+The STEM + C program sits within Texas A&M's Technology & Innovation in Teaching & Learning Lab (TITIL). The program investigates how computational thinking integrated with physical making can accelerate STEM literacy.
+
+[View the STEM + C Lesson Plans →](https://titil.tamu.edu/stemc-lessonplans/)
 
 ## Impact
 
-The rollout improved classroom participation and gave administrators confidence to expand the program district-wide. The toolkit now serves as a flagship example of how I translate emerging technology trends into tangible, student-friendly experiences.
+The research directly informed curriculum decisions and demonstrated that pairing block-based coding with tangible 3D-printed artifacts meaningfully increased student engagement and retention — especially in underserved K–12 populations.

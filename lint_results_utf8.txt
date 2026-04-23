@@ -1,0 +1,53 @@
+﻿
+> vite-react-typescript-starter@0.0.0 lint
+> eslint .
+
+
+C:\Users\Rafay\Documents\GitHub\personalsite\src\components\TypewriterText.tsx
+  2:18  error  'AnimatePresence' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\src\pages\Contact.tsx
+  2:10  error  'motion' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\src\pages\Home.tsx
+  1:31  error  'useMemo' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\src\pages\Projects.tsx
+  1:38  error  'useRef' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\tests\analyze-reference-site.spec.ts
+    1:16  error  'expect' is defined but never used  @typescript-eslint/no-unused-vars
+  143:34  error  'index' is defined but never used   @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\tests\blog.spec.ts
+   2:21  error  'MCPTestBase' is defined but never used  @typescript-eslint/no-unused-vars
+  86:61  error  'page' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\tests\contact.spec.ts
+    2:21  error  'MCPTestBase' is defined but never used  @typescript-eslint/no-unused-vars
+  102:64  error  'page' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\tests\home.spec.ts
+   2:21  error  'MCPTestBase' is defined but never used  @typescript-eslint/no-unused-vars
+  97:56  error  'page' is defined but never used         @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\tests\mcp-basic.spec.ts
+  45:61  error  'page' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\Users\Rafay\Documents\GitHub\personalsite\tests\mcp-integration.spec.ts
+    2:21  error  'MCPTestBase' is defined but never used   @typescript-eslint/no-unused-vars
+   31:65  error  'page' is defined but never used          @typescript-eslint/no-unused-vars
+  124:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  157:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\Users\Rafay\Documents\GitHub\personalsite\tests\mcp-setup.ts
+    1:10  error  'test' is defined but never used          @typescript-eslint/no-unused-vars
+   45:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   65:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   68:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Γ£û 24 problems (24 errors, 0 warnings)
+

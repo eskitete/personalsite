@@ -1,29 +1,16 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { Menu, X, Search, Moon, Sun, ChevronRight, Github, Twitter, ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Menu, X, Search, Moon, Sun, Github, Twitter, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StaggeredText } from '../components/StaggeredText';
 import { Modal } from '../components/Modal';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { getAllPosts } from '../lib/postStore';
+import { getPostsByCategory } from '../lib/postStore';
 import type { Post } from '../utils/posts';
 
-const supplementalCategories = ['Projects', 'Case Studies'] as const;
 
-const normalizeCategory = (category: string) =>
-  category === 'Web Performance' ? 'Web Development' : category;
 
-const toCategorySlug = (category: string) =>
-  normalizeCategory(category)
-    .toLowerCase()
-    .replace(/&/g, 'and')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
-
-const fromCategorySlug = (slug: string, categories: string[]) =>
-  categories.find(category => toCategorySlug(category) === slug);
-
-export function Blog() {
-  const posts = useMemo<Post[]>(() => getAllPosts(), []);
+export function Projects() {
+  const posts = useMemo<Post[]>(() => getPostsByCategory('Projects'), []);
   const [sidebarOpen, setSidebarOpen] = useState<boolean>(() => {
     if (typeof window === 'undefined') {
       return true;
@@ -38,16 +25,12 @@ export function Blog() {
   });
   const [isDark, setIsDark] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedPost, setSelectedPost] = useState<Post | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [bubbleStyle, setBubbleStyle] = useState({ width: 0, height: 0, left: 0, top: 0 });
   const navigate = useNavigate();
-  const { slug, categorySlug } = useParams<{ slug?: string; categorySlug?: string }>();
+  const { slug } = useParams<{ slug?: string }>();
 
-  // Add refs for the buttons
-  const allPostsRef = useRef<HTMLButtonElement>(null);
-  const categoryRefs = useRef<{ [key: string]: HTMLButtonElement | null }>({});
+
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -75,31 +58,7 @@ export function Blog() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Update bubble position when category changes
-  useEffect(() => {
-    const updateBubblePosition = () => {
-      const button = selectedCategory === null 
-        ? allPostsRef.current 
-        : categoryRefs.current[selectedCategory];
-      
-      if (button) {
-        const rect = button.getBoundingClientRect();
-        const parentRect = button.parentElement?.getBoundingClientRect();
-        if (parentRect) {
-          setBubbleStyle({
-            width: rect.width,
-            height: rect.height,
-            left: rect.left - parentRect.left,
-            top: rect.top - parentRect.top
-          });
-        }
-      }
-    };
 
-    updateBubblePosition();
-    window.addEventListener('resize', updateBubblePosition);
-    return () => window.removeEventListener('resize', updateBubblePosition);
-  }, [selectedCategory]);
 
   useEffect(() => {
     if (!slug) {
@@ -116,7 +75,7 @@ export function Blog() {
     } else if (posts.length > 0) {
       setIsModalOpen(false);
       setSelectedPost(null);
-      navigate('/blog', { replace: true });
+      navigate('/projects', { replace: true });
     }
   }, [slug, posts, navigate]);
 
@@ -129,62 +88,24 @@ export function Blog() {
     const normalizedQuery = searchQuery.trim().toLowerCase();
 
     return posts.filter(post => {
-      const postCategory = normalizeCategory(post.category);
       const matchesSearch =
         !normalizedQuery ||
         post.title.toLowerCase().includes(normalizedQuery) ||
         post.content.toLowerCase().includes(normalizedQuery) ||
         post.tags.some(tag => tag.toLowerCase().includes(normalizedQuery));
 
-      const matchesCategory =
-        !selectedCategory || postCategory === normalizeCategory(selectedCategory);
-      return matchesSearch && matchesCategory;
+      return matchesSearch;
     });
-  }, [posts, searchQuery, selectedCategory]);
+  }, [posts, searchQuery]);
 
-  const uniqueCategories = useMemo(() => {
-    const normalizedCategories = posts.map(post => normalizeCategory(post.category));
 
-    const categorySet = new Set(normalizedCategories);
-    supplementalCategories.forEach(category => categorySet.delete(category));
-
-    const sorted = Array.from(categorySet).sort((a, b) => a.localeCompare(b));
-
-    supplementalCategories.forEach(category => {
-      sorted.push(category);
-    });
-
-    return sorted;
-  }, [posts]);
-
-  useEffect(() => {
-    if (!categorySlug) {
-      setSelectedCategory(null);
-      return;
-    }
-
-    const matchedCategory = fromCategorySlug(categorySlug, uniqueCategories);
-    setSelectedCategory(matchedCategory ?? null);
-  }, [categorySlug, uniqueCategories]);
-
-  const handleCategorySelect = (category: string | null) => {
-    if (!category) {
-      setSelectedCategory(null);
-      navigate('/blog');
-      return;
-    }
-
-    const normalized = normalizeCategory(category);
-    setSelectedCategory(normalized);
-    navigate(`/blog/category/${toCategorySlug(normalized)}`);
-  };
 
   const openPostModal = (post: Post) => {
     setSelectedPost(post);
     setIsModalOpen(true);
 
     if (slug !== post.slug) {
-      navigate(`/blog/${post.slug}`);
+      navigate(`/projects/${post.slug}`);
     }
   };
 
@@ -193,11 +114,7 @@ export function Blog() {
     setSelectedPost(null);
 
     if (slug) {
-      if (selectedCategory) {
-        navigate(`/blog/category/${toCategorySlug(selectedCategory)}`, { replace: true });
-      } else {
-        navigate('/blog', { replace: true });
-      }
+      navigate('/projects', { replace: true });
     }
   };
 
@@ -244,7 +161,7 @@ export function Blog() {
 
               <div className="flex items-center justify-between mb-8">
                 <StaggeredText 
-                  text="Blog"
+                  text="Projects"
                   className="text-xl font-bold gradient-text"
                 />
               </div>
@@ -297,61 +214,17 @@ export function Blog() {
           <section className="py-20 px-6">
             <div className="max-w-4xl mx-auto">
               <StaggeredText
-                text="Blog Posts"
+                text="Projects"
                 as="h1"
                 className="text-4xl font-bold mb-4 gradient-text"
               />
               <StaggeredText
-                text="Insights on Cybersecurity, Development, and Technology"
+                text="My latest work, experiments, and case studies"
                 as="p"
                 className="text-xl text-gray-300 mb-8"
               />
               
-              {/* Modern Tab Selector */}
-              <div className="relative">
-                <div className="flex gap-1 p-1 bg-gray-800/50 rounded-lg overflow-x-auto whitespace-nowrap scrollbar-thin scrollbar-thumb-gray-600/70 scrollbar-track-transparent">
-                  <motion.button
-                    ref={allPostsRef}
-                    onClick={() => handleCategorySelect(null)}
-                    data-testid="category-filter"
-                    className={`relative inline-flex px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
-                      selectedCategory === null
-                        ? 'text-white'
-                        : 'text-gray-400 hover:text-gray-300'
-                    }`}
-                  >
-                    All Posts
-                  </motion.button>
-                  {uniqueCategories.map(category => (
-                    <motion.button
-                      key={category}
-                      ref={el => categoryRefs.current[category] = el}
-                      onClick={() => handleCategorySelect(category)}
-                      data-testid="category-filter"
-                      className={`relative inline-flex px-4 py-2 text-sm font-medium rounded-md transition-colors z-10 ${
-                        selectedCategory === category
-                          ? 'text-white'
-                          : 'text-gray-400 hover:text-gray-300'
-                      }`}
-                    >
-                      {category}
-                    </motion.button>
-                  ))}
-                </div>
-                <motion.div
-                  className="absolute bg-blue-500 rounded-md shadow-lg shadow-blue-500/20 z-0"
-                  layoutId="category-bubble"
-                  transition={{
-                    type: "spring",
-                    stiffness: 500,
-                    damping: 30
-                  }}
-                  style={{
-                    ...bubbleStyle,
-                    zIndex: 0
-                  }}
-                />
-              </div>
+
             </div>
           </section>
 
@@ -435,8 +308,8 @@ export function Blog() {
                     </Link>
                   </li>
                   <li>
-                    <Link to="/blog" className="text-gray-400 hover:text-blue-400 transition-colors">
-                      Blog
+                    <Link to="/projects" className="text-gray-400 hover:text-blue-400 transition-colors">
+                      Projects
                     </Link>
                   </li>
                   <li>
@@ -447,22 +320,7 @@ export function Blog() {
                 </ul>
               </div>
 
-              {/* Categories */}
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold gradient-text">Categories</h3>
-                <ul className="space-y-2">
-                  {uniqueCategories.slice(0, 5).map(category => (
-                    <li key={category}>
-                      <button
-                        onClick={() => handleCategorySelect(category)}
-                        className="text-gray-400 hover:text-blue-400 transition-colors"
-                      >
-                        {category}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+
 
               {/* Contact Section */}
               <div className="space-y-4">
